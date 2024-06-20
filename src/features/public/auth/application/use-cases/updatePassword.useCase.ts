@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NewPasswordModel } from '../../api/models/input/new.password.model';
 import { PasswordAdapter } from '../../../../adapter/password.adapter';
-import { UsersRepository } from '../../../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
+import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 
 export class UpdatePasswordCommand {
   constructor(public newPasswordModel: NewPasswordModel) {}

@@ -13,14 +13,14 @@ import { GetDeviceByDeviceIdUseCase } from './application/use-cases/getDeviceByD
 import { DeleteAllSessionExcludeCurrentUseCase } from './application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 import { GetUserByDeviceIdUseCase } from '../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 import { UsersService } from '../../super-admin/users/application/users.service';
-import { UsersRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
-import { UsersQueryRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.query.repository';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
 import { AddExpiredRefreshTokenUseCase } from '../auth/application/use-cases/addExpiredRefreshTokenUseCase';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
 import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
+import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
+import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
 
 const useCases = [
   DeleteCurrentSessionUseCase,

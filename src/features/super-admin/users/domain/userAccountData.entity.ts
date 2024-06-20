@@ -39,6 +39,6 @@ export class UserAccountDataEntity extends BaseEntity {
   })
   expirationDatePasswordRecovery: Date;
 
-  @OneToOne(() => UserEmailDataEntity, (u) => u.id)
+  @OneToOne(() => UserEmailDataEntity, (u) => u.user)
   userEmailData: UserEmailDataEntity;
 }

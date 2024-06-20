@@ -13,8 +13,6 @@ import { ConfirmEmailUseCase } from './application/use-cases/confirmEmail.useCas
 import { UpdatePasswordUseCase } from './application/use-cases/updatePassword.useCase';
 import { PasswordRecoveryUseCase } from './application/use-cases/passwordRecovery.useCase';
 import { FindAndUpdateDeviceAfterRefreshUseCase } from '../devices/application/use-cases/findAndUpdateDeviceAfterRefresh.useCase';
-import { UsersRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
-import { UsersQueryRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.query.repository';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
 import { LoginIsExistConstraint } from '../../../infrastructure/decorators/validate/login.isExist.decorator';
@@ -30,6 +28,8 @@ import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
 import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
+import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
+import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
 
 const useCases = [
   ConfirmEmailUseCase,

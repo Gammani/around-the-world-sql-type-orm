@@ -1,5 +1,4 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
-import { UsersRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { PostsRepository } from '../posts/infrastructure/posts.repository';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
 import { DeviceRepository } from '../devices/infrastructure/device.repository';
@@ -7,6 +6,7 @@ import { PostLikeRepository } from '../postLike/infrastructure/postLike.reposito
 import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike.repository';
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
+import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {

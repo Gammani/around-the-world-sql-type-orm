@@ -36,8 +36,6 @@ import { GetQueryPostByIdUseCase } from './application/use-cases/getQueryPostByI
 import { UpdatePostByAdminUseCase } from './application/use-cases/updatePostByAdmin.useCase';
 import { DeletePostByAdminUseCase } from './application/use-cases/deletePostByAdmin.useCase';
 import { UsersService } from '../../super-admin/users/application/users.service';
-import { UsersRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
-import { UsersQueryRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.query.repository';
 import { BlogIdIsExistConstraint } from '../../../infrastructure/decorators/validate/blogId.isExist.decorator';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
@@ -47,6 +45,8 @@ import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.re
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
 import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
+import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
+import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
 
 const useCases = [
   GetQueryPostsUseCase,

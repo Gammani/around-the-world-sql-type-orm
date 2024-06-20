@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { SecurityDevicesService } from '../../../../public/devices/application/security.devices.service';
-import { UsersQueryRepository } from '../../infrastructure/userRawSqlRepo/users.query.repository';
+import { UsersQueryRepository } from '../../infrastructure/users.query.repository';
 
 export class GetUserViewModelByUserIdCommand {
   constructor(public userId: string) {}
@@ -18,7 +18,6 @@ export class GetUserViewModelByUserIdUseCase {
       command.userId,
     );
     if (foundUser) {
-      console.log(foundUser);
       return foundUser;
     } else {
       return null;

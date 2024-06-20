@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../infrastructure/userRawSqlRepo/users.repository';
 import { UserViewDbModelType } from '../../../../types';
+import { UsersRepository } from '../../infrastructure/users.repository';
 
 export class GetUserByIdCommand {
   constructor(public userId: string) {}

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConfirmCodeModel } from '../../api/models/input/confirm.code.model';
-import { UsersRepository } from '../../../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { UserViewEmailDbType } from '../../../../types';
+import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 
 export class ConfirmEmailCommand {
   constructor(public confirmCodeModel: ConfirmCodeModel) {}

@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../infrastructure/userRawSqlRepo/users.repository';
+import { UsersRepository } from '../../infrastructure/users.repository';
 
 export class DeleteUserByAdminCommand {
   constructor(public userId: string) {}
@@ -12,6 +12,12 @@ export class DeleteUserByAdminUseCase
   constructor(protected usersRepository: UsersRepository) {}
 
   async execute(command: DeleteUserByAdminCommand): Promise<boolean> {
-    return await this.usersRepository.deleteUser(command.userId);
+    const foundUser = await this.usersRepository.findUserById(command.userId);
+    if (foundUser) {
+      // console.log(foundUser);
+      return await this.usersRepository.deleteUser(command.userId);
+    } else {
+      return false;
+    }
   }
 }

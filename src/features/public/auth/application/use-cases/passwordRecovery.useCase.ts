@@ -2,9 +2,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailPasswordRecoveryInputModel } from '../../api/models/input/email.passwordRecovery.input.model';
 import { EmailManager } from '../../../../adapter/email.manager';
-import { UsersRepository } from '../../../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { UserViewDbModelType } from '../../../../types';
 import { add } from 'date-fns/add';
+import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 
 export class PasswordRecoveryCommand {
   constructor(

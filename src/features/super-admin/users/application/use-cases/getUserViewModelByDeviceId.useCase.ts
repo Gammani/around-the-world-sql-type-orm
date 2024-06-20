@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { UsersQueryRepository } from '../../infrastructure/userRawSqlRepo/users.query.repository';
 import { DeviceRepository } from '../../../../public/devices/infrastructure/device.repository';
+import { UsersQueryRepository } from '../../infrastructure/users.query.repository';
 
 export class GetUserViewModelByDeviceIdCommand {
   constructor(public deviceId: string) {}

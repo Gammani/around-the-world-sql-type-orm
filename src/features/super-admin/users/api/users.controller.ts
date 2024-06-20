@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserWithPaginationViewModel } from './models/output/user.output.model';
-import { UsersQueryRepository } from '../infrastructure/userRawSqlRepo/users.query.repository';
 import { UsersService } from '../application/users.service';
 import { UserCreateModel } from './models/input/create-user.input.model';
 import { CommandBus } from '@nestjs/cqrs';
@@ -21,6 +20,8 @@ import { CreateUserByAdminCommand } from '../application/use-cases/createUserByA
 import { DeleteUserByAdminCommand } from '../application/use-cases/deleteUserByAdmin.useCase';
 import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';
 import { GetUserViewModelByUserIdCommand } from '../application/use-cases/getUserViewModelByUserId.useCase';
+import { UsersQueryRepository } from '../infrastructure/users.query.repository';
+import { GetCreatedUserViewModelCommand } from '../application/use-cases/getCreatedUserViewModelUseCase';
 
 @Controller('sa/users')
 export class UsersController {
@@ -41,16 +42,17 @@ export class UsersController {
       sortDirection: string | undefined;
     },
   ) {
-    const foundUsers: any = await this.commandBus.execute(
-      new GetAllQueryUsersCommand(
-        query.searchLoginTerm,
-        query.searchEmailTerm,
-        query.pageNumber,
-        query.pageSize,
-        query.sortBy,
-        query.sortDirection,
-      ),
-    );
+    const foundUsers: UserWithPaginationViewModel =
+      await this.commandBus.execute(
+        new GetAllQueryUsersCommand(
+          query.searchLoginTerm,
+          query.searchEmailTerm,
+          query.pageNumber,
+          query.pageSize,
+          query.sortBy,
+          query.sortDirection,
+        ),
+      );
     return foundUsers;
   }
 
@@ -70,10 +72,10 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUserByAdmin(@Body() inputUserModel: UserCreateModel) {
-    const userId = this.commandBus.execute(
+    const userId = await this.commandBus.execute(
       new CreateUserByAdminCommand(inputUserModel),
     );
-    return userId;
+    return this.commandBus.execute(new GetCreatedUserViewModelCommand(userId));
   }
 
   @UseGuards(BasicAuthGuard)

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { UsersService } from '../../../super-admin/users/application/users.service';
 import { UserViewDbModelType, UserViewEmailDbType } from '../../../types';
+import { UsersRepository } from '../../../super-admin/users/infrastructure/users.repository';
 
 @Injectable()
 export class AuthService {

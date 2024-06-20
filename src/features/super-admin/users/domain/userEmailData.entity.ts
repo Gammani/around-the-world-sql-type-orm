@@ -5,10 +5,10 @@ import { UserAccountDataEntity } from './userAccountData.entity';
 @Entity({ name: 'userEmailData' })
 export class UserEmailDataEntity extends BaseEntity {
   @PrimaryColumn('uuid')
-  id: string;
+  userId: string;
 
   @OneToOne(() => UserAccountDataEntity)
-  @JoinColumn({ name: 'id' })
+  @JoinColumn()
   user: UserAccountDataEntity;
 
   @Column({ nullable: false })

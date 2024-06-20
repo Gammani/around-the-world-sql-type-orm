@@ -5,15 +5,15 @@ import {
   UserEmailDataSqlType,
   UserViewDbModelType,
   UserViewEmailDbType,
-} from '../../../../types';
+} from '../../../types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';
-import { UserAccountDataEntity } from '../../domain/userAccountData.entity';
-import { UserEmailDataEntity } from '../../domain/userEmailData.entity';
+import { UserAccountDataEntity } from '../domain/userAccountData.entity';
+import { UserEmailDataEntity } from '../domain/userEmailData.entity';
 
 @Injectable()
-export class UsersRepo {
+export class UsersRepository {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
     @InjectRepository(UserAccountDataEntity)
@@ -24,17 +24,32 @@ export class UsersRepo {
 
   async findUserById(userId: string): Promise<UserViewDbModelType | null> {
     if (validateUUID(userId)) {
-      const foundUser = await this.dataSource.query(
-        `SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
-        account."recoveryCode", email."confirmationCode", email."expirationDate"
-    FROM public."UserAccountData" as account
-    LEFT JOIN "UserEmailData" as email
-    ON account."id" = email."userId"
-WHERE account."id" = $1`,
-        [userId],
-      );
+      const foundUser = await this.usersEmailDataRepository.find({
+        relations: {
+          user: true,
+        },
+        where: {
+          user: {
+            id: userId,
+          },
+        },
+      });
       if (foundUser.length > 0) {
-        return await this.findUserByLoginOrEmail(foundUser[0].email);
+        return {
+          id: foundUser[0].userId,
+          accountData: {
+            login: foundUser[0].user.login,
+            email: foundUser[0].user.email,
+            createdAt: foundUser[0].user.createdAt.toISOString(),
+            passwordHash: foundUser[0].user.passwordHash,
+            recoveryCode: foundUser[0].user.recoveryCode,
+          },
+          emailConfirmation: {
+            confirmationCode: foundUser[0].confirmationCode,
+            expirationDate: foundUser[0].expirationDate.toISOString(),
+            isConfirmed: foundUser[0].isConfirmed,
+          },
+        };
       } else {
         return null;
       }
@@ -90,16 +105,16 @@ WHERE "confirmationCode" = $1`,
   ): Promise<UserViewDbModelType | null> {
     const foundUser: UserAccountDataSqlType[] = await this.dataSource.query(
       `SELECT id, login, email, "createdAt", "passwordHash", "recoveryCode"
-FROM public."UserAccountData"
-WHERE "UserAccountData".email = $1
-OR "UserAccountData".login = $1;`,
+FROM public."userAccountData"
+WHERE "userAccountData".email = $1
+OR "userAccountData".login = $1;`,
       [loginOrEmail],
     );
     if (foundUser.length > 0) {
       const foundEmailData: UserEmailDataSqlType[] =
         await this.dataSource.query(
-          `SELECT id, "confirmationCode", "expirationDate", "isConfirmed", "userId"
-FROM public."UserEmailData"
+          `SELECT "userId", "confirmationCode", "expirationDate", "isConfirmed", "userId"
+FROM public."userEmailData"
 WHERE "userId" = $1`,
           [foundUser[0].id],
         );
@@ -180,26 +195,27 @@ WHERE "UserAccountData"."recoveryCode" = $1`,
     entity: UserAccountDataEntity | UserEmailDataEntity,
   ): Promise<string> {
     const result = await entity.save();
-    return result.id as string;
+
+    return result instanceof UserEmailDataEntity
+      ? result.userId
+      : (result.id as string);
   }
 
   async loginIsExist(login: string): Promise<boolean> {
-    const foundUser = await this.dataSource.query(
-      `SELECT "login"
-    FROM public."UserAccountData"
-    WHERE "login" = $1`,
-      [login],
-    );
+    const foundUser = await this.usersAccountDataRepository.find({
+      where: {
+        login: login,
+      },
+    });
     return foundUser.length <= 0;
   }
 
   async emailIsExist(email: string): Promise<boolean> {
-    const foundUser = await this.dataSource.query(
-      `SELECT "id", "login", "email", "createdAt", "passwordHash", "recoveryCode"
-    FROM public."UserAccountData"
-    WHERE "email" = $1`,
-      [email],
-    );
+    const foundUser = await this.usersAccountDataRepository.find({
+      where: {
+        email: email,
+      },
+    });
     return foundUser.length <= 0;
   }
 
@@ -283,22 +299,19 @@ WHERE "UserAccountData"."email" = $3;`,
   }
 
   async deleteUser(userId: string): Promise<boolean> {
-    const foundUser = await this.findUserById(userId);
-    if (validateUUID(userId) && foundUser) {
-      await this.dataSource.query(
-        `DELETE FROM public."UserEmailData"
-WHERE "userId" = $1;`,
-        [userId],
-      );
-      await this.dataSource.query(
-        `DELETE FROM public."UserAccountData"
-WHERE "id" = $1;`,
-        [userId],
-      );
-      return true;
-    } else {
-      return false;
-    }
+    await this.usersEmailDataRepository
+      .createQueryBuilder()
+      .delete()
+      .from('userEmailData')
+      .where(`userId = :userId`, { userId })
+      .execute();
+    await this.usersAccountDataRepository
+      .createQueryBuilder()
+      .delete()
+      .from('userAccountData')
+      .where(`id = :userId`, { userId })
+      .execute();
+    return true;
   }
 
   async deleteAll() {

@@ -1,13 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserCreateModel } from '../../api/models/input/create-user.input.model';
 import { CreatedUserViewModel } from '../../api/models/output/user.output.model';
-import { UsersRepository } from '../../infrastructure/userRawSqlRepo/users.repository';
 import { PasswordAdapter } from '../../../../adapter/password.adapter';
 import { UserAccountDataEntity } from '../../domain/userAccountData.entity';
 import { UserEmailDataEntity } from '../../domain/userEmailData.entity';
-import { UsersRepo } from '../../infrastructure/usersTypeOrmRepo/users.repo';
 import { v1 as uuidv1, v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns/add';
+import { UsersRepository } from '../../infrastructure/users.repository';
 
 export class CreateUserByAdminCommand {
   constructor(public inputUserModel: UserCreateModel) {}
@@ -20,9 +19,6 @@ export class CreateUserByAdminUseCase
   constructor(
     protected passwordAdapter: PasswordAdapter,
     protected usersRepository: UsersRepository,
-    protected usersRepo: UsersRepo,
-    public UserAccountDataEntity: UserAccountDataEntity,
-    public UserEmailDataEntity: UserEmailDataEntity,
   ) {}
 
   async execute(command: CreateUserByAdminCommand): Promise<string> {
@@ -42,17 +38,17 @@ export class CreateUserByAdminUseCase
       minutes: 3,
     });
 
-    const userId = await this.usersRepo.save(createdUserDataDto);
+    const userId = await this.usersRepository.save(createdUserDataDto);
 
     const createdEmailDataDto = new UserEmailDataEntity();
-    createdEmailDataDto.id = userId;
+    createdEmailDataDto.userId = userId;
     createdEmailDataDto.confirmationCode = uuidv4();
     createdEmailDataDto.expirationDate = add(createdAt, {
       hours: 1,
       minutes: 3,
     });
     createdEmailDataDto.isConfirmed = true;
-    await this.usersRepo.save(createdEmailDataDto);
+    await this.usersRepository.save(createdEmailDataDto);
 
     return userId;
   }

@@ -9,7 +9,7 @@ export const initTestSettings = async (): Promise<{
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   })
-    // .overrideProvider(UsersQueryRepo)
+    // .overrideProvider(UsersQueryRepository)
     // .useValue({ getAll: () => true })
     .compile();
 

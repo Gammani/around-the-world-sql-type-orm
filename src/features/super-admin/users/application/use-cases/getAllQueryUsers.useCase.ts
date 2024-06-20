@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserWithPaginationViewModel } from '../../api/models/output/user.output.model';
-import { UsersQueryRepository } from '../../infrastructure/userRawSqlRepo/users.query.repository';
-import { UsersQueryRepo } from '../../infrastructure/usersTypeOrmRepo/users.query.repo';
+import { UsersQueryRepository } from '../../infrastructure/users.query.repository';
 
 export class GetAllQueryUsersCommand {
   constructor(
@@ -20,18 +19,19 @@ export class GetAllQueryUsersUseCase
 {
   constructor(
     private usersQueryRepository: UsersQueryRepository,
-    private usersQueryRepo: UsersQueryRepo,
+    private usersQueryRepo: UsersQueryRepository,
   ) {}
 
   async execute(command: GetAllQueryUsersCommand) {
-    const foundUsers: any = await this.usersQueryRepo.findAllUsers(
-      command.searchLoginTerm,
-      command.searchEmailTerm,
-      command.pageNumber,
-      command.pageSize,
-      command.sortBy,
-      command.sortDirection,
-    );
+    const foundUsers: UserWithPaginationViewModel =
+      await this.usersQueryRepo.findAllUsers(
+        command.searchLoginTerm,
+        command.searchEmailTerm,
+        command.pageNumber,
+        command.pageSize,
+        command.sortBy,
+        command.sortDirection,
+      );
     return foundUsers;
   }
 }

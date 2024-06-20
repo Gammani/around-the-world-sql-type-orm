@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { UsersRepository } from '../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { TestingRemoveAll } from './removeAll.controller';
 import { PostsRepository } from '../posts/infrastructure/posts.repository';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
@@ -10,12 +9,12 @@ import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.t
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
+import { UsersModule } from '../../super-admin/users/users.module';
 
 @Module({
-  imports: [SharingModule],
+  imports: [SharingModule, UsersModule],
   controllers: [TestingRemoveAll],
   providers: [
-    UsersRepository,
     BlogsRepository,
     PostsRepository,
     CommentsRepository,

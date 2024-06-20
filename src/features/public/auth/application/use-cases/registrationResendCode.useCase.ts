@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailInputModel } from '../../api/models/input/email.input.model';
-import { UsersRepository } from '../../../../super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { EmailManager } from '../../../../adapter/email.manager';
 import { UserViewDbModelType } from '../../../../types';
 import { add } from 'date-fns/add';
+import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 
 export class RegistrationResendCodeCommand {
   constructor(public emailInputModel: EmailInputModel) {}

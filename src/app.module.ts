@@ -14,13 +14,13 @@ import { PostModule } from './features/public/posts/post.module';
 import { CommentModule } from './features/public/comments/comment.module';
 import { ExpiredTokenModule } from './features/public/expiredToken/expired.token.module';
 import { SecurityDeviceModule } from './features/public/devices/sequrity.device.module';
-import { UsersRepository } from './features/super-admin/users/infrastructure/userRawSqlRepo/users.repository';
 import { SecurityDevicesService } from './features/public/devices/application/security.devices.service';
 import { DeviceRepository } from './features/public/devices/infrastructure/device.repository';
 import { JwtService } from './features/public/auth/application/jwt.service';
 import { BlogSuperAdminModule } from './features/super-admin/blogs/blogSuperAdminModule';
 import { BlogPublicModule } from './features/public/blogs/blogPublicModule';
 import { options } from './settings/configuration/options';
+import { UsersRepository } from './features/super-admin/users/infrastructure/users.repository';
 
 @Module({
   imports: [
@@ -40,7 +40,6 @@ import { options } from './settings/configuration/options';
   controllers: [AppController],
   providers: [
     AppService,
-    UsersRepository,
     EmailManager,
     PasswordAdapter,
     JwtService,
