@@ -81,7 +81,7 @@ export type DeviceDbViewModelType = {
   userId: string;
   ip: string;
   deviceName: string;
-  lastActiveDate: string;
+  lastActiveDate: Date;
 };
 export type TokenPayloadType = {
   deviceId: string;

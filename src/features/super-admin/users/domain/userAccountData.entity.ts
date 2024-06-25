@@ -3,20 +3,24 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEmailDataEntity } from './userEmailData.entity';
+import { DeviceEntity } from '../../../public/devices/domain/devices.entity';
 
 @Entity({ name: 'userAccountData' })
 export class UserAccountDataEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   login: string;
+  @Column({ nullable: false, collation: 'C' })
+  logins1: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   email: string;
 
   @CreateDateColumn({
@@ -39,6 +43,9 @@ export class UserAccountDataEntity extends BaseEntity {
   })
   expirationDatePasswordRecovery: Date;
 
-  @OneToOne(() => UserEmailDataEntity, (u) => u.user)
+  @OneToOne(() => UserEmailDataEntity, (u) => u.user, {})
   userEmailData: UserEmailDataEntity;
+
+  @OneToMany(() => DeviceEntity, (u) => u.userId, {})
+  device: DeviceEntity;
 }

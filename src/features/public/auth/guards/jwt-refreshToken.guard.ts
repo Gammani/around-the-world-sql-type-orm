@@ -41,7 +41,7 @@ export class CheckRefreshToken {
     if (foundDeviceIdByRefreshToken) {
       const foundDeviceByDeviceId: DeviceDbViewModelType | null =
         await this.deviceRepository.findDeviceByDeviceId(
-          foundDeviceIdByRefreshToken.deviceId.toString(),
+          foundDeviceIdByRefreshToken.deviceId,
         );
       if (foundDeviceByDeviceId) {
         req.deviceId = foundDeviceIdByRefreshToken.deviceId;

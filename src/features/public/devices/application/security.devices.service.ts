@@ -1,13 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DeviceRepository } from '../infrastructure/device.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Device,
-  DeviceDocument,
-  DeviceModelStaticType,
-} from '../domain/devices.entity';
-import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class SecurityDevicesService {

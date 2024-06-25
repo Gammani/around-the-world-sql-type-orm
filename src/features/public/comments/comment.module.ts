@@ -27,6 +27,9 @@ import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccoun
 import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
+import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
+import { UsersModule } from '../../super-admin/users/users.module';
+import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 
 const useCases = [
   GetQueryCommentsByPostIdUseCase,
@@ -41,10 +44,7 @@ const useCases = [
 ];
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([UserAccountDataEntity, UserEmailDataEntity]),
-    CqrsModule,
-  ],
+  imports: [CqrsModule, UsersModule, ExpiredTokenModule, SecurityDeviceModule],
   controllers: [CommentsController],
   providers: [
     CommentsService,

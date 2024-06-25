@@ -18,7 +18,7 @@ export class DeleteCurrentSessionUseCase
   async execute(command: DeleteCurrentSessionByIdCommand) {
     await this.devicesRepository.deleteCurrentSessionById(command.deviceId);
     await this.expiredTokenRepository.removeExpiredTokensByDeviceId(
-      command.deviceId.toString(),
+      command.deviceId,
     );
     return;
   }

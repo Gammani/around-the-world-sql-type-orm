@@ -18,7 +18,6 @@ export class ConfirmEmailUseCase
       await this.usersRepository.findUserByConfirmationCode(
         command.confirmCodeModel.code,
       );
-    debugger;
     if (foundUser) {
       return await this.usersRepository.updateConfirmationStatus(
         foundUser.userId,

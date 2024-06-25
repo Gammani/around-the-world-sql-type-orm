@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
   UserAccountDataSqlType,
   UserDbType,
-  UserEmailDataSqlType,
   UserViewDbModelType,
   UserViewEmailDbType,
 } from '../../../types';
@@ -11,6 +10,7 @@ import { DataSource, Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';
 import { UserAccountDataEntity } from '../domain/userAccountData.entity';
 import { UserEmailDataEntity } from '../domain/userEmailData.entity';
+import fs from 'fs/promises';
 
 @Injectable()
 export class UsersRepository {
@@ -72,27 +72,22 @@ export class UsersRepository {
     }
   }
 
-  // async findUserByEmail(email: string): Promise<UserDbType | null> {
-  //   return this.UserModel.findOne({
-  //     'accountData.email': email,
-  //   });
-  // }
-
   async findUserByConfirmationCode(
     confirmationCode: string,
   ): Promise<UserViewEmailDbType | null> {
-    debugger;
-    const foundUser = await this.dataSource.query(
-      `SELECT id, "confirmationCode", "expirationDate", "isConfirmed", "userId"
-FROM public."UserEmailData"
-WHERE "confirmationCode" = $1`,
-      [confirmationCode],
-    );
+    const foundUser = await this.usersEmailDataRepository.find({
+      relations: {
+        user: true,
+      },
+      where: {
+        confirmationCode: confirmationCode,
+      },
+    });
     if (foundUser.length > 0) {
       return {
         userId: foundUser[0].userId,
         confirmationCode: foundUser[0].confirmationCode,
-        expirationDate: foundUser[0].expirationDate,
+        expirationDate: foundUser[0].expirationDate.toISOString(),
         isConfirmed: foundUser[0].isConfirmed,
       };
     } else {
@@ -103,40 +98,30 @@ WHERE "confirmationCode" = $1`,
   async findUserByLoginOrEmail(
     loginOrEmail: string,
   ): Promise<UserViewDbModelType | null> {
-    const foundUser: UserAccountDataSqlType[] = await this.dataSource.query(
-      `SELECT id, login, email, "createdAt", "passwordHash", "recoveryCode"
-FROM public."userAccountData"
-WHERE "userAccountData".email = $1
-OR "userAccountData".login = $1;`,
-      [loginOrEmail],
-    );
-    if (foundUser.length > 0) {
-      const foundEmailData: UserEmailDataSqlType[] =
-        await this.dataSource.query(
-          `SELECT "userId", "confirmationCode", "expirationDate", "isConfirmed", "userId"
-FROM public."userEmailData"
-WHERE "userId" = $1`,
-          [foundUser[0].id],
-        );
-      if (foundEmailData.length > 0) {
-        return {
-          id: foundUser[0].id,
-          accountData: {
-            login: foundUser[0].login,
-            email: foundUser[0].email,
-            createdAt: foundUser[0].createdAt,
-            passwordHash: foundUser[0].passwordHash,
-            recoveryCode: foundUser[0].recoveryCode,
-          },
-          emailConfirmation: {
-            confirmationCode: foundEmailData[0].confirmationCode,
-            expirationDate: foundEmailData[0].expirationDate,
-            isConfirmed: foundEmailData[0].isConfirmed,
-          },
-        };
-      } else {
-        return null;
-      }
+    const foundUser: UserAccountDataEntity | null =
+      await this.usersAccountDataRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.userEmailData', 'userEmailData')
+        .where('user.email = :loginOrEmail OR user.login = :loginOrEmail', {
+          loginOrEmail,
+        })
+        .getOne();
+    if (foundUser) {
+      return {
+        id: foundUser.id,
+        accountData: {
+          login: foundUser.login,
+          email: foundUser.email,
+          createdAt: foundUser.createdAt.toISOString(),
+          passwordHash: foundUser.passwordHash,
+          recoveryCode: foundUser.recoveryCode,
+        },
+        emailConfirmation: {
+          confirmationCode: foundUser.userEmailData.confirmationCode,
+          expirationDate: foundUser.userEmailData.expirationDate.toISOString(),
+          isConfirmed: foundUser.userEmailData.isConfirmed,
+        },
+      };
     } else {
       return null;
     }
@@ -162,15 +147,14 @@ WHERE "UserAccountData"."recoveryCode" = $1`,
   async findUserByPasswordRecoveryCode(
     passwordRecoveryCode: string,
   ): Promise<boolean> {
-    const result: UserAccountDataSqlType[] = await this.dataSource.query(
-      `SELECT id, login, email, "createdAt", "passwordHash", "recoveryCode", "expirationDatePasswordRecovery"
-FROM public."UserAccountData"
-WHERE "UserAccountData"."recoveryCode" = $1`,
-      [passwordRecoveryCode],
-    );
+    const foundUser = await this.usersAccountDataRepository.find({
+      where: {
+        recoveryCode: passwordRecoveryCode,
+      },
+    });
     if (
-      result.length > 0 &&
-      result[0].expirationDatePasswordRecovery > new Date()
+      foundUser.length > 0 &&
+      foundUser[0].expirationDatePasswordRecovery > new Date()
     ) {
       return true;
     } else {
@@ -242,14 +226,14 @@ WHERE "UserAccountData"."recoveryCode" = $1`,
     }
   }
 
-  async updateConfirmationStatus(id: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `UPDATE public."UserEmailData"
-SET "isConfirmed"=true
-WHERE "UserEmailData"."userId" = $1;`,
-      [id],
-    );
-    return result[1] === 1;
+  async updateConfirmationStatus(userId: string): Promise<boolean> {
+    const result = await this.usersEmailDataRepository
+      .createQueryBuilder()
+      .update()
+      .set({ isConfirmed: true })
+      .where(`userId = :userId`, { userId })
+      .execute();
+    return result.affected === 1;
   }
 
   async updateConfirmationCode(
@@ -257,26 +241,28 @@ WHERE "UserEmailData"."userId" = $1;`,
     code: string,
     expirationDate: Date,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `UPDATE public."UserEmailData"
-SET "confirmationCode" = $1, "expirationDate" = $2
-WHERE "UserEmailData"."userId" = $3;`,
-      [code, expirationDate, userId],
-    );
-    return result[1] === 1;
+    const result = await this.usersEmailDataRepository
+      .createQueryBuilder()
+      .update()
+      .set({ confirmationCode: code, expirationDate: expirationDate })
+      .where(`userId = :userId`, { userId })
+      .execute();
+    return result.affected === 1;
   }
 
   async updatePassword(
     passwordHash: string,
     recoveryCode: string,
   ): Promise<boolean> {
-    return this.dataSource.query(
-      `UPDATE public."UserAccountData"
-SET "passwordHash"=$1
-WHERE "recoveryCode" = $2`,
-      [passwordHash, recoveryCode],
-    );
-    // return result[1] === 1;
+    const result = await this.usersAccountDataRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        passwordHash: passwordHash,
+      })
+      .where(`recoveryCode = :recoveryCode`, { recoveryCode })
+      .execute();
+    return result.affected === 1;
   }
 
   async updatePasswordRecoveryCode(
@@ -284,18 +270,16 @@ WHERE "recoveryCode" = $2`,
     recoveryCode: string,
     expirationDatePasswordRecovery: Date,
   ) {
-    const result = await this.dataSource.query(
-      `UPDATE public."UserAccountData"
-SET "recoveryCode" = $1, "expirationDatePasswordRecovery" = $2
-WHERE "UserAccountData"."email" = $3;`,
-      [recoveryCode, expirationDatePasswordRecovery, email],
-    );
-    return result[1] === 1;
-    // const result = await this.UserModel.updateOne(
-    //   { 'accountData.email': email },
-    //   { $set: { 'accountData.recoveryCode': recoveryCode } },
-    // );
-    // return result.modifiedCount === 1;
+    const result = await this.usersAccountDataRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        recoveryCode: recoveryCode,
+        expirationDatePasswordRecovery: expirationDatePasswordRecovery,
+      })
+      .where(`email = :email`, { email })
+      .execute();
+    return result.affected === 1;
   }
 
   async deleteUser(userId: string): Promise<boolean> {
@@ -315,8 +299,26 @@ WHERE "UserAccountData"."email" = $3;`,
   }
 
   async deleteAll() {
-    await this.dataSource.query(`DELETE FROM public."UserEmailData"`);
-    await this.dataSource.query(`DELETE FROM public."UserAccountData"`);
+    await this.usersEmailDataRepository
+      .createQueryBuilder()
+      .delete()
+      .from('userEmailData')
+      .execute();
+    await this.usersAccountDataRepository
+      .createQueryBuilder()
+      .delete()
+      .from('userAccountData')
+      .execute();
     return;
   }
 }
+
+const writeSql = async (sql: string) => {
+  // eslint-disable-next-line
+  const fs = require('fs/promises');
+  try {
+    await fs.writeFile('sql.txt', sql);
+  } catch (error) {
+    console.log(error);
+  }
+};

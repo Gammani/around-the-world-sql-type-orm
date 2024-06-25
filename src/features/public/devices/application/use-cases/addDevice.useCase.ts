@@ -1,14 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
-import { Model } from 'mongoose';
-import { Device, DeviceDocument } from '../../domain/devices.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { DeviceDtoModelType } from '../../../../types';
+import { DeviceEntity } from '../../domain/devices.entity';
 
 export class AddDeviceCommand {
   constructor(
-    public userId: ObjectId | string,
+    public userId: string,
     public ip: string,
     public deviceName: string,
   ) {}
@@ -16,29 +12,15 @@ export class AddDeviceCommand {
 
 @CommandHandler(AddDeviceCommand)
 export class AddDeviceUseCase implements ICommandHandler<AddDeviceCommand> {
-  constructor(
-    private devicesRepository: DeviceRepository,
-    // @InjectModel(Device.name) private DeviceModel: Model<DeviceDocument>,
-  ) {}
+  constructor(private devicesRepository: DeviceRepository) {}
 
-  async execute(command: AddDeviceCommand) {
-    const createdDeviceDtoModel = {
-      userId: command.userId.toString(),
-      ip: command.ip,
-      deviceName: command.deviceName,
-    };
-    // const device = new this.DeviceModel(createdDeviceDtoModel);
-    // device._id = new ObjectId();
-    // device.lastActiveDate = new Date().toISOString();
+  async execute(command: AddDeviceCommand): Promise<string> {
+    const createdDevice = new DeviceEntity();
+    createdDevice.deviceName = command.deviceName;
+    createdDevice.ip = command.ip;
+    createdDevice.lastActiveDate = new Date();
+    createdDevice.userId = command.userId;
 
-    const createdDevice: DeviceDtoModelType =
-      await this.devicesRepository.createDevice(createdDeviceDtoModel);
-    return {
-      id: createdDevice.id,
-      userId: createdDevice.userId,
-      ip: createdDevice.ip,
-      deviceName: createdDevice.deviceName,
-      lastActiveDate: createdDevice.lastActiveDate,
-    };
+    return await this.devicesRepository.createDevice(createdDevice);
   }
 }

@@ -33,7 +33,6 @@ export class PasswordRecoveryUseCase
         hours: 1,
         minutes: 3,
       });
-      // const expirationDatePasswordRecovery = new Date();
       await this.usersRepository.updatePasswordRecoveryCode(
         command.emailPasswordRecoveryInputModel.email,
         recoveryCode,

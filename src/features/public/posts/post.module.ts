@@ -1,27 +1,14 @@
 import { Global, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Post, PostSchema } from './domain/posts.entity';
-import { PostLike, PostLikeSchema } from '../postLike/domain/postLike.entity';
 import { PostsService } from './application/posts.service';
 import { PostsRepository } from './infrastructure/posts.repository';
 import { PostsController } from './api/posts.controller';
-import {
-  CommentLike,
-  CommentLikeSchema,
-} from '../commentLike/domain/commentLike.entity';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query.repository';
-import { Comment, CommentSchema } from '../comments/domain/comments.entity';
 import { PostsQueryRepository } from './infrastructure/posts.query.repository';
 import { PostLikeRepository } from '../postLike/infrastructure/postLike.repository';
 import { PostLikeService } from '../postLike/application/postLike.service';
 import { SecurityDevicesService } from '../devices/application/security.devices.service';
-import { Device, DeviceSchema } from '../devices/domain/devices.entity';
 import { DeviceRepository } from '../devices/infrastructure/device.repository';
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
-import {
-  ExpiredToken,
-  ExpiredTokenSchema,
-} from '../expiredToken/domain/expired-token.entity';
 import { JwtService } from '../auth/application/jwt.service';
 import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
@@ -42,11 +29,11 @@ import { EmailManager } from '../../adapter/email.manager';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 import { BlogsService } from '../../super-admin/blogs/application/blogs.service';
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
-import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
+import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
+import { UsersModule } from '../../super-admin/users/users.module';
+import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 
 const useCases = [
   GetQueryPostsUseCase,
@@ -64,8 +51,10 @@ const useCases = [
 @Global()
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserAccountDataEntity, UserEmailDataEntity]),
     SharingModule,
+    ExpiredTokenModule,
+    UsersModule,
+    SecurityDeviceModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -91,11 +80,6 @@ const useCases = [
     CommentsRepository,
     ...useCases,
   ],
-  exports: [
-    PostsService,
-    PostsRepository,
-    PostsQueryRepository,
-    // MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
-  ],
+  exports: [PostsService, PostsRepository, PostsQueryRepository],
 })
 export class PostModule {}

@@ -10,9 +10,16 @@ import { PasswordAdapter } from '../../adapter/password.adapter';
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 import { UsersModule } from '../../super-admin/users/users.module';
+import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
+import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 
 @Module({
-  imports: [SharingModule, UsersModule],
+  imports: [
+    SharingModule,
+    UsersModule,
+    ExpiredTokenModule,
+    SecurityDeviceModule,
+  ],
   controllers: [TestingRemoveAll],
   providers: [
     BlogsRepository,

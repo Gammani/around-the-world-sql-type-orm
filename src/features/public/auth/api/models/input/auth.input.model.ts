@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { ObjectId } from 'mongodb';
 import { Trim } from '../../../../../../infrastructure/decorators/transform/trim';
 
 export class AuthInputModel {

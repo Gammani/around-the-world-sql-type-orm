@@ -1,59 +1,35 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
-import { HydratedDocument, Model } from 'mongoose';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserAccountDataEntity } from '../../../super-admin/users/domain/userAccountData.entity';
 
-export type DeviceDocument = HydratedDocument<Device>;
+@Entity({ name: 'device' })
+export class DeviceEntity extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-@Schema()
-export class Device {
-  _id: ObjectId;
-
-  @Prop({
-    required: true,
-  })
-  userId: ObjectId;
-
-  @Prop({
-    required: true,
-  })
+  @Column({ nullable: false })
   ip: string;
 
-  @Prop({
-    required: true,
-  })
+  @Column({ nullable: false })
   deviceName: string;
-  @Prop({
-    required: true,
+
+  @Column({
+    nullable: false,
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  lastActiveDate: string;
+  lastActiveDate: Date;
+
+  @Column('uuid')
+  userId: string;
+
+  @ManyToOne(() => UserAccountDataEntity)
+  @JoinColumn()
+  user: UserAccountDataEntity;
 }
-
-export const DeviceSchema = SchemaFactory.createForClass(Device);
-
-DeviceSchema.statics.createDevice = (
-  createdDeviceDtoModel,
-  DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
-): DeviceDocument => {
-  const device = new DeviceModel();
-  device._id = new ObjectId();
-  device.userId = createdDeviceDtoModel.userId;
-  device.ip = createdDeviceDtoModel.ip;
-  device.deviceName = createdDeviceDtoModel.deviceName || 'unknown';
-  device.lastActiveDate = new Date().toISOString();
-
-  console.log(device);
-  return device;
-};
-
-export type DeviceModelStaticType = {
-  createDevice: (
-    createdDeviceDtoModel: any,
-    DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
-  ) => {
-    _id: ObjectId;
-    userId: ObjectId;
-    ip: string;
-    deviceName: string;
-    lastActiveDate: string;
-  };
-};

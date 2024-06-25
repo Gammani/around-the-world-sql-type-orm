@@ -1,12 +1,13 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
-export const options: TypeOrmModuleOptions = {
+export default new DataSource({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
   username: 'postgres',
   password: 'sa',
   database: 'around-the-world-typeorm',
-  autoLoadEntities: true,
   synchronize: false,
-};
+  migrations: ['src/db/migrations/*.ts'],
+  entities: ['src/**/*.entity{.ts,.js}'],
+});

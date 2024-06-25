@@ -7,6 +7,7 @@ export class UserEmailDataEntity extends BaseEntity {
   @PrimaryColumn('uuid')
   userId: string;
 
+  // @OneToOne(() => UserAccountDataEntity, { cascade: true, onDelete: 'CASCADE' })
   @OneToOne(() => UserAccountDataEntity)
   @JoinColumn()
   user: UserAccountDataEntity;

@@ -1,27 +1,16 @@
-import { ObjectId } from 'mongodb';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export type ExpiredTokenDocument = HydratedDocument<ExpiredToken>;
+@Entity({ name: 'expiredToken' })
+export class ExpiredTokenEntity extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-@Schema()
-export class ExpiredToken {
-  _id: ObjectId;
+  @Column('uuid')
+  deviceId: string;
 
-  @Prop({
-    required: true,
-  })
-  deviceId: ObjectId;
+  @Column('uuid')
+  userId: string;
 
-  @Prop({
-    required: true,
-  })
-  userId: ObjectId;
-
-  @Prop({
-    required: true,
-  })
+  @Column()
   refreshToken: string;
 }
-
-export const ExpiredTokenSchema = SchemaFactory.createForClass(ExpiredToken);

@@ -25,15 +25,6 @@ export class CreateUserUserCase implements ICommandHandler<CreateUserCommand> {
     const passwordHash = await this.passwordAdapter.createPasswordHash(
       command.inputUserModel.password,
     );
-    // const confirmationCode = uuidv4();
-    // const createUser = {
-    //   inputUserModel: command.inputUserModel,
-    //   passwordHash: passwordHash,
-    //   isConfirmed: false,
-    //   confirmationCode: confirmationCode,
-    // };
-    //
-    // const createdUser = await this.usersRepository.createUser(createUser);
     const createdAt = new Date();
 
     const createdUserDataDto = new UserAccountDataEntity();

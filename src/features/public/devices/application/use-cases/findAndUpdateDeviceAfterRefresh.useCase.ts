@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
 
 export class FindAndUpdateDeviceAfterRefreshCommand {
-  constructor(public deviceId: ObjectId | string) {}
+  constructor(public deviceId: string) {}
 }
 
 @CommandHandler(FindAndUpdateDeviceAfterRefreshCommand)

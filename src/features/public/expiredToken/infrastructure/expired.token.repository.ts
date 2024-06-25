@@ -1,32 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ExpiredToken,
-  ExpiredTokenDocument,
-} from '../domain/expired-token.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { v1 as uuidv1 } from 'uuid';
+import { ExpiredTokenEntity } from '../domain/expired-token.entity';
 
 @Injectable()
 export class ExpiredTokenRepository {
   constructor(
-    // @InjectModel(ExpiredToken.name)
-    // private ExpiredTokenModel: Model<ExpiredTokenDocument>,
+    @InjectRepository(ExpiredTokenEntity)
+    private expiredTokenRepository: Repository<ExpiredTokenEntity>,
     private passwordAdapter: PasswordAdapter,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
-  async findToken(RefreshToken: string): Promise<boolean> {
-    const foundToken = await this.dataSource.query(
-      `SELECT id, "deviceId", "userId", "refreshToken"
-  FROM public."ExpiredToken"
-  WHERE "refreshToken" = $1`,
-      [RefreshToken],
-    );
-    if (foundToken.length > 0) {
+  async findToken(refreshToken: string): Promise<boolean> {
+    //   const foundToken = await this.dataSource.query(
+    //     `SELECT id, "deviceId", "userId", "refreshToken"
+    // FROM public."ExpiredToken"
+    // WHERE "refreshToken" = $1`,
+    //     [RefreshToken],
+    //   );
+    const foundExpiredToken = await this.expiredTokenRepository
+      .createQueryBuilder('expiredToken')
+      .where('expiredToken.refreshToken = :refreshToken', { refreshToken });
+    const foundToken = await foundExpiredToken.getOne();
+    if (foundToken) {
       return true;
     } else {
       return false;
@@ -42,29 +41,17 @@ export class ExpiredTokenRepository {
     }
   }
   async addExpiredRefreshToken(
-    deviceId: ObjectId | string,
-    userId: ObjectId | string,
+    deviceId: string,
+    userId: string,
     refreshToken: string,
   ) {
     debugger;
-    const newExpiredRefreshToken = {
-      id: uuidv1(),
-      deviceId,
-      userId,
-      refreshToken,
-    };
+    const newExpiredRefreshToken = new ExpiredTokenEntity();
+    newExpiredRefreshToken.deviceId = deviceId;
+    newExpiredRefreshToken.userId = userId;
+    newExpiredRefreshToken.refreshToken = refreshToken;
 
-    await this.dataSource.query(
-      `INSERT INTO public."ExpiredToken"(
-  id, "deviceId", "userId", "refreshToken")
-  VALUES ($1, $2, $3, $4);`,
-      [
-        newExpiredRefreshToken.id,
-        newExpiredRefreshToken.deviceId,
-        newExpiredRefreshToken.userId,
-        newExpiredRefreshToken.refreshToken,
-      ],
-    );
+    await newExpiredRefreshToken.save();
     return;
   }
   async removeAllExpiredTokensByDeviceIdFromUserIdAllSessionExcludeCurrent(
@@ -72,20 +59,33 @@ export class ExpiredTokenRepository {
     userId: string,
   ) {
     await this.dataSource.query(
-      `DELETE FROM public."ExpiredToken"
-WHERE "ExpiredToken"."deviceId" <> $1
-AND "ExpiredToken"."userId" = $2`,
+      `DELETE FROM public."expiredToken"
+WHERE "expiredToken"."deviceId" <> $1
+AND "expiredToken"."userId" = $2`,
       [deviceId, userId],
     );
   }
   async removeExpiredTokensByDeviceId(deviceId: string) {
-    await this.dataSource.query(
-      `DELETE FROM public."ExpiredToken"
-WHERE "ExpiredToken"."deviceId"=$1`,
-      [deviceId],
-    );
+    //     await this.dataSource.query(
+    //       `DELETE FROM public."ExpiredToken"
+    // WHERE "ExpiredToken"."deviceId"=$1`,
+    //       [deviceId],
+    //     );
+    await this.expiredTokenRepository
+      .createQueryBuilder()
+      .delete()
+      .from('expiredToken')
+      .where('deviceId = :deviceId', {
+        deviceId: deviceId,
+      })
+      .execute();
+    return;
   }
   async deleteAll() {
-    await this.dataSource.query(`DELETE FROM public."ExpiredToken"`);
+    await this.expiredTokenRepository
+      .createQueryBuilder()
+      .delete()
+      .from('expiredToken')
+      .execute();
   }
 }

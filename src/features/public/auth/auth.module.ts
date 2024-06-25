@@ -30,6 +30,9 @@ import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccoun
 import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
+import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
+import { UsersModule } from '../../super-admin/users/users.module';
+import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 
 const useCases = [
   ConfirmEmailUseCase,
@@ -57,7 +60,6 @@ const decorators = [
     //   { name: Device.name, schema: DeviceSchema },
     //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     // ]),
-    TypeOrmModule.forFeature([UserAccountDataEntity, UserEmailDataEntity]),
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
@@ -65,6 +67,9 @@ const decorators = [
       },
     ]),
     SharingModule,
+    ExpiredTokenModule,
+    UsersModule,
+    SecurityDeviceModule,
   ],
   controllers: [AuthController],
   providers: [

@@ -1,73 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Device,
-  DeviceDocument,
-  DeviceModelStaticType,
-} from '../domain/devices.entity';
-import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
-import {
-  CreatedDeviceDtoModelType,
-  DeviceDbViewModelType,
-  DeviceDtoModelType,
-  DeviceSqlDbType,
-} from '../../../types';
-import { v1 as uuidv1, validate as validateUUID } from 'uuid';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { DeviceDbViewModelType } from '../../../types';
+import { validate as validateUUID } from 'uuid';
+import { DataSource, getConnection, Not, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DeviceEntity } from '../domain/devices.entity';
+import fs from 'fs/promises';
 
 @Injectable()
 export class DeviceRepository {
   constructor(
-    // @InjectModel(Device.name)
-    // private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
+    @InjectRepository(DeviceEntity)
+    private deviceRepository: Repository<DeviceEntity>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
-  async createDevice(
-    createdDeviceDtoModel: CreatedDeviceDtoModelType,
-  ): Promise<DeviceDtoModelType> {
-    const newDevice = {
-      id: uuidv1(),
-      ip: createdDeviceDtoModel.ip,
-      deviceName: createdDeviceDtoModel.deviceName,
-      lastActiveDate: new Date(),
-      userId: createdDeviceDtoModel.userId,
-    };
-
-    await this.dataSource.query(
-      `INSERT INTO public."Device"(
-id, ip, "deviceName", "lastActiveDate", "userId")
-VALUES ($1, $2, $3, $4, $5);`,
-      [
-        newDevice.id,
-        newDevice.ip,
-        newDevice.deviceName,
-        newDevice.lastActiveDate,
-        newDevice.userId,
-      ],
-    );
-    return {
-      id: newDevice.id,
-      userId: newDevice.userId,
-      ip: newDevice.ip,
-      deviceName: newDevice.deviceName,
-      lastActiveDate: newDevice.lastActiveDate.toISOString(),
-    };
+  async createDevice(createdDevice: DeviceEntity): Promise<string> {
+    const result = await createdDevice.save();
+    return result.id;
   }
   // async findDeviceByDeviceId(deviceId: ObjectId): Promise<DeviceDbType | null> {
   //   return this.DeviceModel.findOne({ _id: deviceId });
   // }
   async findUserIdByDeviceId(deviceId: string): Promise<string | null> {
     if (validateUUID(deviceId)) {
-      const foundDevice: DeviceSqlDbType[] = await this.dataSource.query(
-        `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
-FROM public."Device"
-WHERE id = $1;`,
-        [deviceId],
-      );
-      if (foundDevice.length > 0) {
-        return foundDevice[0].userId;
+      const foundDevice: DeviceDbViewModelType | null =
+        await this.deviceRepository
+          .createQueryBuilder('device')
+          .where('device.id = :id', { id: deviceId })
+          .getOne();
+      if (foundDevice) {
+        return foundDevice.userId;
       } else {
         return null;
       }
@@ -75,14 +37,15 @@ WHERE id = $1;`,
       return null;
     }
   }
-  async findAndUpdateDeviceAfterRefresh(deviceId: string | ObjectId) {
+  async findAndUpdateDeviceAfterRefresh(deviceId: string) {
     const newDate = new Date();
-    return this.dataSource.query(
-      `UPDATE public."Device"
-SET "lastActiveDate" = $1
-WHERE id = $2;`,
-      [newDate, deviceId.toString()],
-    );
+    const result = await this.deviceRepository
+      .createQueryBuilder()
+      .update()
+      .set({ lastActiveDate: newDate })
+      .where('id = :id', { id: deviceId })
+      .execute();
+    return result.affected === 1;
   }
 
   // async findDeviceFromUserId(
@@ -103,19 +66,17 @@ WHERE id = $2;`,
     deviceId: string,
   ): Promise<DeviceDbViewModelType | null> {
     if (validateUUID(deviceId)) {
-      const foundDevice: DeviceSqlDbType[] = await this.dataSource.query(
-        `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
-FROM public."Device"
-WHERE id = $1;`,
-        [deviceId],
-      );
-      if (foundDevice.length > 0) {
+      const foundDevice = await this.deviceRepository
+        .createQueryBuilder('device')
+        .where('device.id = :id', { id: deviceId })
+        .getOne();
+      if (foundDevice) {
         return {
-          id: foundDevice[0].id,
-          userId: foundDevice[0].userId,
-          ip: foundDevice[0].ip,
-          deviceName: foundDevice[0].deviceName,
-          lastActiveDate: foundDevice[0].lastActiveDate,
+          id: foundDevice.id,
+          userId: foundDevice.userId,
+          ip: foundDevice.ip,
+          deviceName: foundDevice.deviceName,
+          lastActiveDate: foundDevice.lastActiveDate,
         };
       } else {
         return null;
@@ -126,30 +87,44 @@ WHERE id = $1;`,
   }
   async deleteCurrentSessionById(deviceId: string): Promise<boolean> {
     if (validateUUID(deviceId)) {
-      await this.dataSource.query(
-        `DELETE FROM public."Device"
-WHERE id = $1;`,
-        [deviceId],
-      );
+      //       await this.dataSource.query(
+      //         `DELETE FROM public."Device"
+      // WHERE id = $1;`,
+      //         [deviceId],
+      //       );
+      await this.deviceRepository
+        .createQueryBuilder()
+        .delete()
+        .where('id = :id', { id: deviceId })
+        .execute();
       return true;
     } else {
       return false;
     }
   }
-  async deleteAllSessionExcludeCurrent(
-    deviceId: ObjectId | string,
-    userId: string,
-  ) {
-    await this.dataSource.query(
-      `DELETE FROM public."Device"
-WHERE "Device".id <> $1
-AND "Device"."userId" = $2`,
-      [deviceId, userId],
-    );
+  async deleteAllSessionExcludeCurrent(deviceId: string, userId: string) {
+    await this.deviceRepository
+      .createQueryBuilder()
+      .delete()
+      .from('device')
+      .where(`device.id <> :deviceId AND device."userId" = :userId`, {
+        deviceId,
+        userId,
+      })
+      .execute();
     return;
   }
+  // async deleteAllSessionExcludeCurrent(deviceId: string, userId: string) {
+  //   await getConnection()
+  //     .getRepository('device')
+  //     .delete({ id: { $ne: deviceId }, userId });
+  // }
   async deleteAll() {
-    await this.dataSource.query(`DELETE FROM public."Device"`);
+    await this.deviceRepository
+      .createQueryBuilder()
+      .delete()
+      .from('device')
+      .execute();
   }
   // для своего теста
   async findDeviceTestByUserId(userId: string) {
@@ -161,3 +136,12 @@ WHERE "userId" = $1;`,
     );
   }
 }
+const writeSql = async (sql: string) => {
+  // eslint-disable-next-line
+  const fs = require('fs/promises');
+  try {
+    await fs.writeFile('sql.txt', sql);
+  } catch (error) {
+    console.log(error);
+  }
+};

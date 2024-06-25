@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
 import { ExpiredTokenRepository } from '../../../expiredToken/infrastructure/expired.token.repository';
 
 export class DeleteAllSessionExcludeCurrentCommand {
   constructor(
-    public deviceId: ObjectId | string,
+    public deviceId: string,
     public userId: string,
   ) {}
 }

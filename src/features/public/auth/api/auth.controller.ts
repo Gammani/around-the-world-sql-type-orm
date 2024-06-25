@@ -43,7 +43,7 @@ import { GetUserViewModelByDeviceIdCommand } from '../../../super-admin/users/ap
 import { RegistrationResendCodeCommand } from '../application/use-cases/registrationResendCode.useCase';
 import { AddExpiredRefreshTokenCommand } from '../application/use-cases/addExpiredRefreshTokenUseCase';
 
-// @UseGuards(ThrottlerGuard)
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -93,11 +93,11 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const device = await this.commandBus.execute(
+    const deviceId: string = await this.commandBus.execute(
       new AddDeviceCommand(req.user, ip, deviceName),
     );
-    const accessToken = await this.jwtService.createAccessJWT(device.id);
-    const refreshToken = await this.jwtService.createRefreshJWT(device.id);
+    const accessToken = await this.jwtService.createAccessJWT(deviceId);
+    const refreshToken = await this.jwtService.createRefreshJWT(deviceId);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
@@ -113,10 +113,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     await this.commandBus.execute(
-      new AddExpiredRefreshTokenCommand(
-        req.deviceId.toString(),
-        req.cookies.refreshToken,
-      ),
+      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
     );
 
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
@@ -144,7 +141,7 @@ export class AuthController {
   @HttpCode(204)
   async logout(
     @Req() req: Request & RequestWithDeviceId,
-    // @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
     // await this.commandBus.execute(
     //   new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
@@ -152,7 +149,7 @@ export class AuthController {
     await this.commandBus.execute(
       new DeleteCurrentSessionByIdCommand(req.deviceId.toString()),
     );
-    // res.cookie('refreshToken', '', { httpOnly: false, secure: false });
+    res.cookie('refreshToken', '', { httpOnly: true, secure: true });
   }
 
   @UseGuards(CheckAccessToken)

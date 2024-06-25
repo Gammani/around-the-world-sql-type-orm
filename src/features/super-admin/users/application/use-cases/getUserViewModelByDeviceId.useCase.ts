@@ -18,7 +18,7 @@ export class GetUserViewModelByDeviceIdUseCase {
       command.deviceId,
     );
     if (userId) {
-      return await this.usersQueryRepository.findUserById(userId.toString());
+      return await this.usersQueryRepository.findUserById(userId);
     } else {
       return null;
     }

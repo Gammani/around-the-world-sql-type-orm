@@ -1,37 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { DeviceViewModel } from '../api/models/output/device.output.model';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Device,
-  DeviceDocument,
-  DeviceModelStaticType,
-} from '../domain/devices.entity';
-import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { DeviceEntity } from '../domain/devices.entity';
 
 @Injectable()
 export class DeviceQueryRepository {
   constructor(
-    // @InjectModel(Device.name)
-    // private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
+    @InjectRepository(DeviceEntity)
+    private deviceRepository: Repository<DeviceEntity>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async findAllActiveSessionFromUserId(
-    userId: ObjectId | string,
+    userId: string,
   ): Promise<DeviceViewModel[] | undefined> {
-    const result = await this.dataSource.query(
-      `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
-FROM public."Device"
-WHERE "Device"."userId" = $1`,
-      [userId],
-    );
+    const result = await this.deviceRepository
+      .createQueryBuilder('device')
+      .where('device.userId = :userId', { userId })
+      .getMany();
     return result.map((i) => ({
       ip: i.ip,
       title: i.deviceName,
-      lastActiveDate: i.lastActiveDate,
+      lastActiveDate: i.lastActiveDate.toISOString(),
       deviceId: i.id,
     }));
   }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './api/users.controller';
 import { UsersService } from './application/users.service';
 import { GetUserViewModelByDeviceIdUseCase } from './application/use-cases/getUserViewModelByDeviceId.useCase';
@@ -22,6 +22,8 @@ import { UserEmailDataEntity } from './domain/userEmailData.entity';
 import { UsersRepository } from './infrastructure/users.repository';
 import { UsersQueryRepository } from './infrastructure/users.query.repository';
 import { GetCreatedUserViewModelUseCase } from './application/use-cases/getCreatedUserViewModelUseCase';
+import { ExpiredTokenModule } from '../../public/expiredToken/expired.token.module';
+import { SecurityDeviceModule } from '../../public/devices/sequrity.device.module';
 
 const useCases = [
   CreateUserUserCase,
@@ -39,6 +41,8 @@ const useCases = [
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserAccountDataEntity, UserEmailDataEntity]),
+    forwardRef(() => ExpiredTokenModule),
+    forwardRef(() => SecurityDeviceModule),
     SharingModule,
   ],
   controllers: [UsersController],

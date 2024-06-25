@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SecurityDeviceController } from './api/security.device.controller';
 import { SecurityDevicesService } from './application/security.devices.service';
 import { DeviceRepository } from './infrastructure/device.repository';
@@ -17,10 +17,11 @@ import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
 import { AddExpiredRefreshTokenUseCase } from '../auth/application/use-cases/addExpiredRefreshTokenUseCase';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
-import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
+import { UsersModule } from '../../super-admin/users/users.module';
+import { DeviceEntity } from './domain/devices.entity';
+import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
 
 const useCases = [
   DeleteCurrentSessionUseCase,
@@ -34,8 +35,10 @@ const useCases = [
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserAccountDataEntity, UserEmailDataEntity]),
+    TypeOrmModule.forFeature([DeviceEntity]),
     CqrsModule,
+    forwardRef(() => UsersModule),
+    forwardRef(() => ExpiredTokenModule),
   ],
   controllers: [SecurityDeviceController],
   providers: [
@@ -49,7 +52,9 @@ const useCases = [
     PasswordAdapter,
     JwtService,
     EmailManager,
+    DeviceEntity,
     ...useCases,
   ],
+  exports: [TypeOrmModule.forFeature([DeviceEntity]), DeviceEntity],
 })
 export class SecurityDeviceModule {}

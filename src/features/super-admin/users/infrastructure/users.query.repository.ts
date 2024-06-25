@@ -43,10 +43,10 @@ export class UsersQueryRepository {
       relations: {
         userEmailData: true,
       },
-      where: {
-        email: ILike(`%${searchEmailTerm}%`),
-        login: ILike(`%${searchLoginTerm}%`),
-      },
+      where: [
+        { email: ILike(`%${searchEmailTerm}%`) },
+        { login: ILike(`%${searchLoginTerm}%`) },
+      ],
     });
 
     const totalCount = totalUsers.length;
@@ -55,10 +55,10 @@ export class UsersQueryRepository {
       relations: {
         userEmailData: true,
       },
-      where: {
-        email: ILike(`%${searchEmailTerm}%`),
-        login: ILike(`%${searchLoginTerm}%`),
-      },
+      where: [
+        { email: ILike(`%${searchEmailTerm}%`) },
+        { login: ILike(`%${searchLoginTerm}%`) },
+      ],
       order: {
         [sortBy]: sortDirection,
       },
