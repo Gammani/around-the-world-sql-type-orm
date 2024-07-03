@@ -79,46 +79,56 @@ export class PostsQueryRepository {
         .addSelect((subQuery) => {
           return subQuery
             .select('count(*)::int')
-            .from(PostLikeEntity, 'l')
-            .where('l.likeStatus = :likeStatus', {
-              likeStatus: LikeStatus.Like,
-            })
-            .andWhere('l.postId = p.id');
-        }, 'likesCount')
+            .from(PostEntity, 'l')
+            .where('p.blogId = :blogId', { blogId });
+        }, 'totalCount')
         .addSelect((subQuery) => {
           return subQuery
-            .select('count(*)::int')
-            .from(PostLikeEntity, 'l')
-            .where('l.likeStatus = :likeStatus', {
-              likeStatus: LikeStatus.Dislike,
-            })
-            .andWhere('l.postId = p.id');
-        }, 'dislikesCount')
-        .addSelect((subQuery) => {
-          return (
-            subQuery
-              .select(`l."likeStatus"`)
-              // .select(`COALESCE( l."likeStatus",'${'None'}')`)
-              .from(PostLikeEntity, 'l')
-              .where('l.userId = :userId', {
-                userId,
-              })
-              .andWhere('l.postId = p.id')
-          );
-        }, 'myStatus')
-        .addSelect((subQuery) => {
-          return (
-            subQuery
-              .select('l.id')
-              // .select(`COALESCE( l."likeStatus",'${'None'}')`)
-              .from(PostLikeEntity, 'l')
-              .where('l.postId = p.id')
-              .orderBy(`l."addedAt"`, 'DESC')
-              .limit(1)
-          );
-        }, 'newestLikes')
+            .addSelect((subQuery) => {
+              return subQuery
+                .select('count(*)::int')
+                .from(PostLikeEntity, 'l')
+                .where('l.likeStatus = :likeStatus', {
+                  likeStatus: LikeStatus.Like,
+                })
+                .andWhere('l.postId = p.id');
+            }, 'likesCount')
+            .addSelect((subQuery) => {
+              return subQuery
+                .select('count(*)::int')
+                .from(PostLikeEntity, 'l')
+                .where('l.likeStatus = :likeStatus', {
+                  likeStatus: LikeStatus.Dislike,
+                })
+                .andWhere('l.postId = p.id');
+            }, 'dislikesCount')
+            .addSelect((subQuery) => {
+              return (
+                subQuery
+                  .select(`l."likeStatus"`)
+                  // .select(`COALESCE( l."likeStatus",'${'None'}')`)
+                  .from(PostLikeEntity, 'l')
+                  .where('l.userId = :userId', {
+                    userId,
+                  })
+                  .andWhere('l.postId = p.id')
+              );
+            }, 'myStatus')
+            .addSelect((subQuery) => {
+              return (
+                subQuery
+                  .select('l.id')
+                  // .select(`COALESCE( l."likeStatus",'${'None'}')`)
+                  .from(PostLikeEntity, 'l')
+                  .where('l.postId = p.id')
+                  .orderBy(`l."addedAt"`, 'DESC')
+                  .limit(1)
+              );
+            }, 'newestLikes')
+            .from(PostEntity, 'p')
+            .where('p.blogId = :blogId', { blogId });
+        }, 'items')
 
-        .where('p.blogId = :blogId', { blogId })
         .getRawMany();
 
       const items = totalCount.map((count) => {
