@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './domain/blogs.entity';
 import { BlogsController } from './api/blogs.controller';
 import { BlogsQueryRepository } from './infrastructure/blogs.query.repository';
 import { BlogsService } from './application/blogs.service';
@@ -11,13 +9,9 @@ import { GetBlogByIdUseCase } from './application/use-cases/getBlogByIdUseCase';
 import { GetQueryBlogByIdUseCase } from './application/use-cases/getQueryBlogById.useCase';
 import { UpdateBlogByAdminUseCase } from './application/use-cases/updateBlogByAdmin.useCase';
 import { RemoveBlogByAdminUseCase } from './application/use-cases/removeBlogByAdmin.useCase';
-import { Post, PostSchema } from '../../public/posts/domain/posts.entity';
-import {
-  PostLike,
-  PostLikeSchema,
-} from '../../public/postLike/domain/postLike.entity';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
-import { PostModule } from '../../public/posts/post.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BlogEntity } from './domain/blogs.entity';
 
 const useCases = [
   GetAllQueryBlogsUseCase,
@@ -29,16 +23,15 @@ const useCases = [
 ];
 
 @Module({
-  imports: [
-    // MongooseModule.forFeature([
-    //   { name: Blog.name, schema: BlogSchema },
-    //   { name: Post.name, schema: PostSchema },
-    //   { name: PostLike.name, schema: PostLikeSchema },
-    // ]),
-    PostModule,
-    SharingModule,
-  ],
+  imports: [TypeOrmModule.forFeature([BlogEntity]), SharingModule],
   controllers: [BlogsController],
-  providers: [BlogsService, BlogsRepository, BlogsQueryRepository, ...useCases],
+  providers: [
+    BlogsService,
+    BlogsRepository,
+    BlogsQueryRepository,
+    BlogEntity,
+    ...useCases,
+  ],
+  exports: [TypeOrmModule.forFeature([BlogEntity]), BlogEntity],
 })
 export class BlogSuperAdminModule {}

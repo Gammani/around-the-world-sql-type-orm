@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../domain/blogs.entity';
-import { Model } from 'mongoose';
 import {
   BlogViewModel,
   BlogWithPaginationViewModel,
 } from '../api/models/output/blog.output.model';
 import { validate as validateUUID } from 'uuid';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { BlogEntity } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
-    // @InjectModel(Blog.name) private BlogModel: Model<BlogDocument>,
+    @InjectRepository(BlogEntity)
+    private blogRepo: Repository<BlogEntity>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
@@ -43,24 +42,39 @@ export class BlogsQueryRepository {
         ? `"${sortByQuery}"`
         : `"createdAt"`;
 
-    const sortDirection = sortDirectionQuery === 'asc' ? 'asc' : 'desc';
+    const sortDirection = sortDirectionQuery === 'asc' ? 'ASC' : 'DESC';
 
-    const totalBlogs = await this.dataSource.query(
-      `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
-FROM public."Blogs"
-WHERE LOWER(name) ILIKE '%${searchNameTerm}%'`,
-      [],
-    );
+    //     const totalBlogs = await this.dataSource.query(
+    //       `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
+    // FROM public."Blogs"
+    // WHERE LOWER(name) ILIKE '%${searchNameTerm}%'`,
+    //       [],
+    //     );
+    const totalBlogs = await this.blogRepo
+      .createQueryBuilder('blog')
+      .where(`LOWER(blog.name) ILIKE :searchNameTerm`, {
+        searchNameTerm: `%${searchNameTerm}%`,
+      })
+      .getMany();
     const totalCount = totalBlogs.length;
 
-    const blogs = await this.dataSource.query(
-      `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
-FROM public."Blogs"
-WHERE LOWER(name) ILIKE '%${searchNameTerm}%' 
-ORDER BY CASE WHEN name = UPPER(name) THEN 0 ELSE 1 END, ${sortBy} ${sortDirection}
-  LIMIT $1 OFFSET $2`,
-      [pageSize, offset],
-    );
+    //     const blogs = await this.dataSource.query(
+    //       `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
+    // FROM public."Blogs"
+    // WHERE LOWER(name) ILIKE '%${searchNameTerm}%'
+    // ORDER BY CASE WHEN name = UPPER(name) THEN 0 ELSE 1 END, ${sortBy} ${sortDirection}
+    //   LIMIT $1 OFFSET $2`,
+    //       [pageSize, offset],
+    //     );
+    const blogs = await this.blogRepo
+      .createQueryBuilder('blog')
+      .where(`LOWER(blog.name) ILIKE :searchNameTerm`, {
+        searchNameTerm: `%${searchNameTerm}%`,
+      })
+      .orderBy(sortBy, sortDirection)
+      .limit(pageSize)
+      .offset(offset)
+      .getMany();
 
     const pageCount = Math.ceil(totalCount / pageSize);
 
@@ -90,6 +104,29 @@ WHERE id = $1`,
       );
       if (foundBlog.length > 0) {
         return foundBlog[0];
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  async getBlogById(blogId: string): Promise<BlogViewModel | null> {
+    if (validateUUID(blogId)) {
+      const foundBlog = await this.blogRepo
+        .createQueryBuilder('blog')
+        .where('blog.id = :blogId', { blogId })
+        .getOne();
+      if (foundBlog) {
+        return {
+          id: foundBlog.id,
+          name: foundBlog.name,
+          description: foundBlog.description,
+          websiteUrl: foundBlog.websiteUrl,
+          createdAt: foundBlog.createdAt.toISOString(),
+          isMembership: foundBlog.isMembership,
+        };
       } else {
         return null;
       }

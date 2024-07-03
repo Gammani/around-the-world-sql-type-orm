@@ -129,9 +129,10 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createBlogByAdmin(@Body() inputBlogModel: BlogCreateModel) {
-    return this.commandBus.execute(
+    const blogId = await this.commandBus.execute(
       new CreateBlogByAdminCommand(inputBlogModel),
     );
+    return await this.blogQueryRepository.getBlogById(blogId);
   }
 
   @UseGuards(BasicAuthGuard)
@@ -144,13 +145,10 @@ export class BlogsController {
       new GetBlogByIdCommand(blogId),
     );
     if (foundBlog) {
-      return await this.commandBus.execute(
-        new CreatePostByAdminWithBlogIdCommand(
-          inputPostModel,
-          foundBlog.id,
-          foundBlog.name,
-        ),
+      const postId = await this.commandBus.execute(
+        new CreatePostByAdminWithBlogIdCommand(inputPostModel, foundBlog.id),
       );
+      return await this.postQueryRepository.findPostById(postId);
     } else {
       throw new NotFoundException();
     }
@@ -243,14 +241,15 @@ export class BlogsController {
   @Get(':blogId/posts/:id')
   async findPostById(
     @Param('id') postId: string,
+    @Param('blogId') blogId: string,
     @Req() req: Request & RequestWithUserId,
   ) {
     const foundPost: PostViewDbType | null = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );
-    if (foundPost) {
+    if (foundPost && foundPost.blogId === blogId) {
       return await this.commandBus.execute(
-        new GetQueryPostByIdCommand(foundPost, req.user?.userId),
+        new GetQueryPostByIdCommand(foundPost.id, req.user?.userId),
       );
       // return console.log(res);
     } else {

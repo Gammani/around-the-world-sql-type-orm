@@ -108,7 +108,7 @@ export class BlogsController {
     );
     if (foundPost) {
       return await this.commandBus.execute(
-        new GetQueryPostByIdCommand(foundPost, req.user?.userId),
+        new GetQueryPostByIdCommand(foundPost.id, req.user?.userId),
       );
       // return console.log(res);
     } else {

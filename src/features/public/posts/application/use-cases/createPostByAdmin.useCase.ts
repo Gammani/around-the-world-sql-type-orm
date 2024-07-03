@@ -4,14 +4,6 @@ import {
   PostCreateModelWithBlogId,
 } from '../../api/models/input/post.input.model';
 import { PostViewModel } from '../../api/models/output/post.output.model';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Post,
-  PostDocument,
-  PostModelStaticType,
-  PostModelWithUriBlogIdStaticType,
-} from '../../domain/posts.entity';
-import { Model } from 'mongoose';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { BlogViewDbType } from '../../../../types';
 import { v1 as uuidv1 } from 'uuid';
@@ -27,13 +19,7 @@ export class CreatePostByAdminCommand {
 export class CreatePostByAdminUseCase
   implements ICommandHandler<CreatePostByAdminCommand>
 {
-  constructor(
-    // @InjectModel(Post.name)
-    // private PostModel: Model<PostDocument> &
-    //   PostModelWithUriBlogIdStaticType &
-    //   PostModelStaticType,
-    private postsRepository: PostsRepository,
-  ) {}
+  constructor(private postsRepository: PostsRepository) {}
 
   async execute(command: CreatePostByAdminCommand): Promise<PostViewModel> {
     const createdPost: CreatedPostDtoType = {

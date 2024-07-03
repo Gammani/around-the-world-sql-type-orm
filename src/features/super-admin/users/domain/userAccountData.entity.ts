@@ -9,6 +9,9 @@ import {
 } from 'typeorm';
 import { UserEmailDataEntity } from './userEmailData.entity';
 import { DeviceEntity } from '../../../public/devices/domain/devices.entity';
+import { PostLikeEntity } from '../../../public/postLike/domain/postLike.entity';
+import { CommentEntity } from '../../../public/comments/domain/comments.entity';
+import { CommentLikeEntity } from '../../../public/commentLike/domain/commentLike.entity';
 
 @Entity({ name: 'userAccountData' })
 export class UserAccountDataEntity extends BaseEntity {
@@ -17,8 +20,6 @@ export class UserAccountDataEntity extends BaseEntity {
 
   @Column({ nullable: false, collation: 'C' })
   login: string;
-  @Column({ nullable: false, collation: 'C' })
-  logins1: string;
 
   @Column({ nullable: false, collation: 'C' })
   email: string;
@@ -48,4 +49,13 @@ export class UserAccountDataEntity extends BaseEntity {
 
   @OneToMany(() => DeviceEntity, (u) => u.userId, {})
   device: DeviceEntity;
+
+  @OneToMany(() => CommentEntity, (com) => com.userId, {})
+  comment: CommentEntity;
+
+  @OneToMany(() => PostLikeEntity, (lke) => lke.userId, {})
+  postLikes: PostLikeEntity;
+
+  @OneToMany(() => CommentLikeEntity, (like) => like.userId, {})
+  commentLike: CommentLikeEntity;
 }

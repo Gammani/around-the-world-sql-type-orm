@@ -1,67 +1,43 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
-import { HydratedDocument, Model } from 'mongoose';
-import { BlogCreateModel } from '../api/models/input/blog.input.model';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { PostEntity } from '../../../public/posts/domain/posts.entity';
+import { PostLikeEntity } from '../../../public/postLike/domain/postLike.entity';
 
-export type BlogDocument = HydratedDocument<Blog>;
+@Entity({ name: 'blogs' })
+export class BlogEntity extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-@Schema()
-export class Blog {
-  _id: ObjectId;
-
-  @Prop({
-    required: true,
-  })
+  @Column({ nullable: false })
   name: string;
 
-  @Prop({
-    required: true,
-  })
+  @Column({ nullable: false })
   description: string;
 
-  @Prop({
-    required: true,
-  })
+  @Column({ nullable: false })
   websiteUrl: string;
 
-  @Prop({
-    required: true,
+  @CreateDateColumn({
+    nullable: false,
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  createdAt: string;
+  createdAt: Date;
 
-  @Prop({
-    required: true,
-  })
+  @Column({ default: false })
   isMembership: boolean;
+
+  @OneToMany(() => PostEntity, (post) => post.blogId, { onDelete: 'CASCADE' })
+  post: PostEntity;
+
+  @OneToMany(() => PostLikeEntity, (postLike) => postLike.blogId, {
+    onDelete: 'CASCADE',
+  })
+  postLike: PostLikeEntity;
 }
-
-export const BlogSchema = SchemaFactory.createForClass(Blog);
-
-BlogSchema.statics.createBlog = (
-  dto: BlogCreateModel,
-  BlogModel: Model<BlogDocument> & BlogModelStaticType,
-) => {
-  const blog = new BlogModel();
-  blog._id = new ObjectId();
-  blog.name = dto.name;
-  blog.description = dto.description;
-  blog.websiteUrl = dto.websiteUrl;
-  blog.createdAt = new Date().toISOString();
-  blog.isMembership = false;
-  console.log(blog);
-  return blog;
-};
-
-export type BlogModelStaticType = {
-  createBlog: (
-    dto: BlogCreateModel,
-    BlogModel: Model<BlogDocument> & BlogModelStaticType,
-  ) => {
-    _id: ObjectId;
-    name: string;
-    description: string;
-    websiteUrl: string;
-    createdAt: string;
-    isMembership: boolean;
-  };
-};

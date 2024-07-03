@@ -48,6 +48,12 @@ export class UsersQueryRepository {
         { login: ILike(`%${searchLoginTerm}%`) },
       ],
     });
+    // const test = await this.userEmailRepo.find({
+    //   relations: {
+    //     user: true,
+    //   },
+    // });
+    // console.log(test);
 
     const totalCount = totalUsers.length;
 

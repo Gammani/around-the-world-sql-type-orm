@@ -16,7 +16,7 @@ export class RemoveBlogByAdminUseCase
   ) {}
 
   async execute(command: RemoveBlogByAdminCommand): Promise<boolean> {
-    await this.postsRepository.deleteAllPostsByBlogId(command.blogId);
+    // await this.postsRepository.deleteAllPostsByBlogId(command.blogId);
     return await this.blogsRepository.deleteBlog(command.blogId);
   }
 }

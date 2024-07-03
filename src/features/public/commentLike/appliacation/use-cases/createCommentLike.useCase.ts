@@ -1,11 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  CommentLike,
-  CommentLikeDocument,
-  CommentLikeModelStaticType,
-} from '../../domain/commentLike.entity';
-import { Model } from 'mongoose';
 import { CommentLikeRepository } from '../../infrastructure/commentLike.repository';
 import {
   CommentViewDbType,
@@ -27,12 +20,7 @@ export class CreateCommentLikeCommand {
 export class CreateCommentLikeUseCase
   implements ICommandHandler<CreateCommentLikeCommand>
 {
-  constructor(
-    // @InjectModel(CommentLike.name)
-    // private CommentLikeModel: Model<CommentLikeDocument> &
-    //   CommentLikeModelStaticType,
-    private commentLikeRepository: CommentLikeRepository,
-  ) {}
+  constructor(private commentLikeRepository: CommentLikeRepository) {}
 
   async execute(command: CreateCommentLikeCommand) {
     const createCommentPostLike: CreateCommentLikeDtoType = {

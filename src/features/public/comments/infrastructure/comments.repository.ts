@@ -1,11 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Comment,
-  CommentDocument,
-  CommentModelStaticType,
-} from '../domain/comments.entity';
-import { Model } from 'mongoose';
 import { CommentViewModel } from '../api/models/output/comment-output.model';
 import { CommentViewDbType, LikeStatus } from '../../../types';
 import { CreatedCommentDtoType } from '../api/models/input/comment.input.model';
@@ -18,8 +11,6 @@ export class CommentsRepository {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
-    // @InjectModel(Comment.name)
-    // private CommentModel: Model<CommentDocument> & CommentModelStaticType,
   ) {}
 
   async findCommentById(commentId: string): Promise<CommentViewDbType | null> {

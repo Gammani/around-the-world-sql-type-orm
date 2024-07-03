@@ -12,6 +12,6 @@ export class GetQueryBlogByIdUseCase
   constructor(private blogQueryRepository: BlogsQueryRepository) {}
 
   async execute(command: GetQueryBlogByIdCommand) {
-    return await this.blogQueryRepository.findBlogById(command.blogId);
+    return await this.blogQueryRepository.getBlogById(command.blogId);
   }
 }

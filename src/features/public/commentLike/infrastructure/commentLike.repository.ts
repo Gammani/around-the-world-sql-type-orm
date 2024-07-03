@@ -1,11 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  CommentLike,
-  CommentLikeDocument,
-  CommentLikeModelStaticType,
-} from '../domain/commentLike.entity';
-import { Model } from 'mongoose';
 import {
   CommentLikeViewDbType,
   CreateCommentLikeDtoType,
@@ -16,12 +9,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentLikeRepository {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-    // @InjectModel(CommentLike.name)
-    // private CommentLikeModel: Model<CommentLikeDocument> &
-    //   CommentLikeModelStaticType,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async findLike(
     commentId: string,

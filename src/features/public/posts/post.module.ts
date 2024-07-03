@@ -34,6 +34,10 @@ import { UsersQueryRepository } from '../../super-admin/users/infrastructure/use
 import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
 import { UsersModule } from '../../super-admin/users/users.module';
 import { SecurityDeviceModule } from '../devices/sequrity.device.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostEntity } from './domain/posts.entity';
+import { PostLikeEntity } from '../postLike/domain/postLike.entity';
+import { BlogSuperAdminModule } from '../../super-admin/blogs/blogSuperAdminModule';
 
 const useCases = [
   GetQueryPostsUseCase,
@@ -51,10 +55,12 @@ const useCases = [
 @Global()
 @Module({
   imports: [
+    TypeOrmModule.forFeature([PostEntity, PostLikeEntity]),
     SharingModule,
     ExpiredTokenModule,
     UsersModule,
     SecurityDeviceModule,
+    BlogSuperAdminModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -80,6 +86,11 @@ const useCases = [
     CommentsRepository,
     ...useCases,
   ],
-  exports: [PostsService, PostsRepository, PostsQueryRepository],
+  exports: [
+    PostsService,
+    PostsRepository,
+    PostsQueryRepository,
+    TypeOrmModule.forFeature([PostEntity, PostLikeEntity]),
+  ],
 })
 export class PostModule {}

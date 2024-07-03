@@ -1,38 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Post,
-  PostDocument,
-  PostModelWithUriBlogIdStaticType,
-} from '../domain/posts.entity';
-import { Model } from 'mongoose';
 import { PostViewModel } from '../api/models/output/post.output.model';
 import {
   CreatedPostDtoType,
   UpdateInputPostModelType,
 } from '../api/models/input/post.input.model';
 import { LikeStatus, PostViewDbType } from '../../../types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';
+import { PostEntity } from '../domain/posts.entity';
 
 @Injectable()
 export class PostsRepository {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
-    // @InjectModel(Post.name)
-    // private PostModel: Model<PostDocument & PostModelWithUriBlogIdStaticType>,
+    @InjectRepository(PostEntity) private postRepo: Repository<PostEntity>,
   ) {}
 
   async findPostById(postId: string): Promise<PostViewDbType | null> {
     if (validateUUID(postId)) {
-      const foundPost = await this.dataSource.query(
-        `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
-FROM public."Posts"
-WHERE id = $1`,
-        [postId],
-      );
+      const foundPost = await this.postRepo.find({
+        where: {
+          id: postId,
+        },
+      });
       if (foundPost.length > 0) {
         return foundPost[0];
       } else {
@@ -47,7 +39,7 @@ WHERE id = $1`,
     createdPostDto: CreatedPostDtoType,
   ): Promise<PostViewModel> {
     await this.dataSource.query(
-      `INSERT INTO public."Posts"(
+      `INSERT INTO public."posts"(
 id, title, "shortDescription", content, "blogId", "blogName", "createdAt")
 VALUES ($1, $2, $3, $4, $5, $6, $7);`,
       [
@@ -56,7 +48,6 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);`,
         createdPostDto.shortDescription,
         createdPostDto.content,
         createdPostDto.blogId,
-        createdPostDto.blogName,
         createdPostDto.createdAt,
       ],
     );
@@ -76,6 +67,11 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);`,
         newestLikes: [],
       },
     };
+  }
+
+  async save(entity: PostEntity): Promise<string> {
+    const result = await entity.save();
+    return result.id;
   }
 
   async updatePostByAdmin(

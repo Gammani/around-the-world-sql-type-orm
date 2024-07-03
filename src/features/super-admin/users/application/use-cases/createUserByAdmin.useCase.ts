@@ -1,10 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserCreateModel } from '../../api/models/input/create-user.input.model';
-import { CreatedUserViewModel } from '../../api/models/output/user.output.model';
 import { PasswordAdapter } from '../../../../adapter/password.adapter';
 import { UserAccountDataEntity } from '../../domain/userAccountData.entity';
 import { UserEmailDataEntity } from '../../domain/userEmailData.entity';
-import { v1 as uuidv1, v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns/add';
 import { UsersRepository } from '../../infrastructure/users.repository';
 

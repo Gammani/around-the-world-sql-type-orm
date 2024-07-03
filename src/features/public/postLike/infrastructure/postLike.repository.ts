@@ -1,40 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  PostLike,
-  PostLikeDocument,
-  PostLikeModelStaticType,
-} from '../domain/postLike.entity';
-import { Model } from 'mongoose';
 import {
   CreatedPostLikeDtoType,
   LikeStatus,
   PostLikeViewDbType,
 } from '../../../types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { PostLikeEntity } from '../domain/postLike.entity';
 
 @Injectable()
 export class PostLikeRepository {
   constructor(
-    // @InjectModel(PostLike.name)
-    // private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
     @InjectDataSource()
     private dataSource: DataSource,
+    @InjectRepository(PostLikeEntity)
+    private postLikesRepo: Repository<PostLikeEntity>,
   ) {}
 
   async findPostLike(
     postId: string,
     userId: string,
   ): Promise<PostLikeViewDbType | null> {
-    const result = await this.dataSource.query(
-      `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
-FROM public."PostLike"
-WHERE "postId" = $1 AND "userId" = $2;`,
-      [postId, userId],
-    );
-    if (result.length > 0) {
-      return result[0];
+    const foundPostLike = await this.postLikesRepo.find({
+      where: {
+        postId: postId,
+        userId: userId,
+      },
+    });
+    if (foundPostLike.length > 0) {
+      return {
+        id: foundPostLike[0].id,
+        userId: foundPostLike[0].userId,
+        postId: foundPostLike[0].postId,
+        likeStatus: foundPostLike[0].likeStatus,
+        addedAt: foundPostLike[0].addedAt,
+        lastUpdate: foundPostLike[0].lastUpdate,
+      };
     } else {
       return null;
     }
@@ -59,23 +60,26 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
     return;
   }
 
+  async save(entity: PostLikeEntity): Promise<string> {
+    await entity.save();
+    return entity.id;
+  }
+
   async updatePostLikeStatus(
     likeStatus: LikeStatus,
     postLike: PostLikeViewDbType,
   ): Promise<boolean> {
     const date = new Date();
-    try {
-      await this.dataSource.query(
-        `UPDATE public."PostLike"
-SET "likeStatus" = $1, "lastUpdate"= $2
-WHERE id = $3`,
-        [likeStatus, date, postLike.id],
-      );
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    const result = await this.postLikesRepo.update(
+      {
+        id: postLike.id,
+      },
+      {
+        likeStatus: likeStatus,
+        lastUpdate: date,
+      },
+    );
+    return result.affected === 1;
   }
 
   async deletePostLikesByPostId(postId: string) {

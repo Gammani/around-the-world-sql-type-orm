@@ -1,19 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  PostLike,
-  PostLikeDocument,
-  PostLikeModelStaticType,
-} from '../../domain/postLike.entity';
-import { Model } from 'mongoose';
 import { PostLikeRepository } from '../../infrastructure/postLike.repository';
 import {
-  CreatedPostLikeDtoType,
   LikeStatus,
   PostViewDbType,
   UserViewDbModelType,
 } from '../../../../types';
-import { v1 as uuidv1 } from 'uuid';
+import { PostLikeEntity } from '../../domain/postLike.entity';
 
 export class CreatePostLikeCommand {
   constructor(
@@ -27,22 +19,17 @@ export class CreatePostLikeCommand {
 export class CreatePostLikeUseCase
   implements ICommandHandler<CreatePostLikeCommand>
 {
-  constructor(
-    // @InjectModel(PostLike.name)
-    // private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
-    private postLikeRepository: PostLikeRepository,
-  ) {}
+  constructor(private postLikeRepository: PostLikeRepository) {}
 
   async execute(command: CreatePostLikeCommand) {
-    const createdPostLike: CreatedPostLikeDtoType = {
-      id: uuidv1(),
-      userId: command.user.id,
-      login: command.user.accountData.login,
-      post: command.post,
-      likeStatus: command.likeStatus,
-      addedAt: new Date(),
-      lastUpdate: new Date(),
-    };
-    return await this.postLikeRepository.createPostLike(createdPostLike);
+    const date = new Date();
+    const createdPostLikeDto = new PostLikeEntity();
+    createdPostLikeDto.userId = command.user.id;
+    createdPostLikeDto.postId = command.post.id;
+    createdPostLikeDto.likeStatus = command.likeStatus;
+    createdPostLikeDto.addedAt = date;
+    createdPostLikeDto.lastUpdate = date;
+    createdPostLikeDto.blogId = command.post.blogId;
+    return await this.postLikeRepository.save(createdPostLikeDto);
   }
 }

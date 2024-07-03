@@ -1,18 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../domain/comments.entity';
-import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
-import {
-  CommentLike,
-  CommentLikeDocument,
-} from '../../commentLike/domain/commentLike.entity';
 import {
   CommentsWithPaginationViewModel,
   CommentViewModel,
 } from '../api/models/output/comment-output.model';
 import {
-  CommentDbType,
   CommentLikeViewDbType,
   CommentViewDbModelType,
   CommentViewDbType,
@@ -24,12 +15,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsQueryRepository {
-  constructor(
-    // @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
-    // @InjectModel(CommentLike.name)
-    // private CommentLikeModel: Model<CommentLikeDocument>,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   // async findCommentById(
   //   id: string,

@@ -12,6 +12,7 @@ import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 import { UsersModule } from '../../super-admin/users/users.module';
 import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
 import { SecurityDeviceModule } from '../devices/sequrity.device.module';
+import { BlogSuperAdminModule } from '../../super-admin/blogs/blogSuperAdminModule';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SecurityDeviceModule } from '../devices/sequrity.device.module';
     UsersModule,
     ExpiredTokenModule,
     SecurityDeviceModule,
+    BlogSuperAdminModule,
   ],
   controllers: [TestingRemoveAll],
   providers: [

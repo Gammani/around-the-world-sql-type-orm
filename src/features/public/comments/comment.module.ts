@@ -23,13 +23,13 @@ import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
 import { UsersService } from '../../super-admin/users/application/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
-import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
 import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
 import { UsersModule } from '../../super-admin/users/users.module';
 import { SecurityDeviceModule } from '../devices/sequrity.device.module';
+import { CommentEntity } from './domain/comments.entity';
+import { CommentLikeEntity } from '../commentLike/domain/commentLike.entity';
 
 const useCases = [
   GetQueryCommentsByPostIdUseCase,
@@ -44,7 +44,13 @@ const useCases = [
 ];
 
 @Module({
-  imports: [CqrsModule, UsersModule, ExpiredTokenModule, SecurityDeviceModule],
+  imports: [
+    TypeOrmModule.forFeature([CommentEntity, CommentLikeEntity]),
+    CqrsModule,
+    UsersModule,
+    ExpiredTokenModule,
+    SecurityDeviceModule,
+  ],
   controllers: [CommentsController],
   providers: [
     CommentsService,
@@ -63,5 +69,6 @@ const useCases = [
     ExpiredTokenRepository,
     ...useCases,
   ],
+  exports: [TypeOrmModule.forFeature([CommentEntity, CommentLikeEntity])],
 })
 export class CommentModule {}

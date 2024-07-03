@@ -1,94 +1,44 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
-import { HydratedDocument, Model } from 'mongoose';
-import { CommentDbType, CommentViewDbType, LikeStatus } from '../../../types';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserAccountDataEntity } from '../../../super-admin/users/domain/userAccountData.entity';
+import { CommentEntity } from '../../comments/domain/comments.entity';
 
-export type CommentLikeDocument = HydratedDocument<CommentLike>;
+@Entity({ name: 'commentLikes' })
+export class CommentLikeEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-@Schema()
-export class CommentLike {
-  _id: ObjectId;
+  @Column({ nullable: false })
+  likeStatus: string;
 
-  @Prop({
-    required: true,
+  @Column({
+    nullable: false,
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  userId: ObjectId;
+  addedAt: Date;
 
-  @Prop({
-    required: true,
+  @Column({
+    nullable: false,
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  login: string;
+  lastUpdate: Date;
 
-  @Prop({
-    required: true,
-  })
-  blogId: ObjectId;
+  @ManyToOne(() => UserAccountDataEntity)
+  @JoinColumn()
+  user: UserAccountDataEntity;
+  @Column({ nullable: false })
+  userId: string;
 
-  @Prop({
-    required: true,
-  })
-  postId: ObjectId;
-
-  @Prop({
-    required: true,
-  })
-  commentId: ObjectId;
-
-  @Prop({
-    required: true,
-  })
-  likeStatus: LikeStatus;
-
-  @Prop({
-    required: true,
-  })
-  addedAt: string;
-
-  @Prop({
-    required: true,
-  })
-  lastUpdate: string;
+  @ManyToOne(() => CommentEntity)
+  @JoinColumn()
+  comment: CommentEntity;
+  @Column({ nullable: false })
+  commentId: string;
 }
-
-export const CommentLikeSchema = SchemaFactory.createForClass(CommentLike);
-
-CommentLikeSchema.statics.createCommentLike = (
-  userId: ObjectId,
-  login: string,
-  comment: CommentDbType,
-  likeStatus: LikeStatus,
-  CommentLikeModel: Model<CommentLikeDocument> & CommentLikeModelStaticType,
-) => {
-  const commentLike = new CommentLikeModel();
-  commentLike._id = new ObjectId();
-  commentLike.userId = userId;
-  commentLike.login = login;
-  commentLike.blogId = comment._blogId;
-  commentLike.postId = comment._postId;
-  commentLike.commentId = comment._id;
-  commentLike.likeStatus = likeStatus;
-  commentLike.addedAt = new Date().toISOString();
-  commentLike.lastUpdate = new Date().toISOString();
-
-  return commentLike;
-};
-
-export type CommentLikeModelStaticType = {
-  createCommentLike: (
-    userId: string,
-    login: string,
-    comment: CommentViewDbType,
-    likeStatus: LikeStatus,
-    CommentLikeModel: Model<CommentLikeDocument> & CommentLikeModelStaticType,
-  ) => {
-    _id: ObjectId;
-    userId: ObjectId;
-    login: string;
-    blogId: ObjectId;
-    postId: ObjectId;
-    commentId: ObjectId;
-    likeStatus: LikeStatus;
-    addedAt: string;
-    lastUpdate: string;
-  };
-};

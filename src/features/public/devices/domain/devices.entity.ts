@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { UserAccountDataEntity } from '../../../super-admin/users/domain/userAccountData.entity';
 
-@Entity({ name: 'device' })
+@Entity({ name: 'devices' })
 export class DeviceEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -116,8 +116,7 @@ export type PostViewDbType = {
   shortDescription: string;
   content: string;
   blogId: string;
-  blogName: string;
-  createdAt: string;
+  createdAt: Date;
 };
 
 export type BlogDbType = {
@@ -133,7 +132,7 @@ export type BlogViewDbType = {
   name: string;
   description: string;
   websiteUrl: string;
-  createdAt: string;
+  createdAt: Date;
   isMembership: boolean;
 };
 export type CommentatorInfoType = {
@@ -194,12 +193,10 @@ export type PostLikeDbType = {
 export type PostLikeViewDbType = {
   id: string;
   userId: string;
-  login: string;
-  blogId: string;
   postId: string;
-  likeStatus: LikeStatus;
+  likeStatus: string;
   addedAt: Date;
-  lastUpdate: string;
+  lastUpdate: Date;
 };
 export type CreatedPostLikeDtoType = {
   id: string;
