@@ -27,8 +27,8 @@ export class TestingRemoveAll {
     // await this.commentLikeRepository.deleteAll();
     // await this.commentsRepository.deleteAll();
     // await this.postLikeRepository.deleteAll();
-    // await this.postsRepository.deleteAll();
-    // await this.blogRepository.deleteAll();
+    await this.postsRepository.deleteAll();
+    await this.blogRepository.deleteAll();
     await this.deviceRepository.deleteAll();
     await this.usersRepository.deleteAll();
     await this.expiredTokenRepository.deleteAll();

@@ -16,7 +16,7 @@ export class DeletePostByAdminUseCase
   ) {}
 
   async execute(command: DeletePostByAdminCommand): Promise<boolean> {
-    await this.postLikeRepository.deletePostLikesByPostId(command.postId);
+    // await this.postLikeRepository.deletePostLikesByPostId(command.postId);
     return await this.postsRepository.deletePostById(command.postId);
   }
 }

@@ -82,13 +82,13 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
     return result.affected === 1;
   }
 
-  async deletePostLikesByPostId(postId: string) {
-    return await this.dataSource.query(
-      `DELETE FROM public."PostLike"
-WHERE "postId" = $1`,
-      [postId],
-    );
-  }
+  //   async deletePostLikesByPostId(postId: string) {
+  //     return await this.dataSource.query(
+  //       `DELETE FROM public."PostLike"
+  // WHERE "postId" = $1`,
+  //       [postId],
+  //     );
+  //   }
 
   async deleteAll() {
     await this.dataSource.query(`DELETE FROM public."PostLike"`);

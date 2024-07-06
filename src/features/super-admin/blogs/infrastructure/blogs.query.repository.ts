@@ -44,12 +44,6 @@ export class BlogsQueryRepository {
 
     const sortDirection = sortDirectionQuery === 'asc' ? 'ASC' : 'DESC';
 
-    //     const totalBlogs = await this.dataSource.query(
-    //       `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
-    // FROM public."Blogs"
-    // WHERE LOWER(name) ILIKE '%${searchNameTerm}%'`,
-    //       [],
-    //     );
     const totalBlogs = await this.blogRepo
       .createQueryBuilder('blog')
       .where(`LOWER(blog.name) ILIKE :searchNameTerm`, {
@@ -58,20 +52,19 @@ export class BlogsQueryRepository {
       .getMany();
     const totalCount = totalBlogs.length;
 
-    //     const blogs = await this.dataSource.query(
-    //       `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
-    // FROM public."Blogs"
-    // WHERE LOWER(name) ILIKE '%${searchNameTerm}%'
-    // ORDER BY CASE WHEN name = UPPER(name) THEN 0 ELSE 1 END, ${sortBy} ${sortDirection}
-    //   LIMIT $1 OFFSET $2`,
-    //       [pageSize, offset],
-    //     );
     const blogs = await this.blogRepo
       .createQueryBuilder('blog')
       .where(`LOWER(blog.name) ILIKE :searchNameTerm`, {
         searchNameTerm: `%${searchNameTerm}%`,
       })
-      .orderBy(sortBy, sortDirection)
+      // .orderBy(
+      //   `CASE
+      //      WHEN name = UPPER(name) THEN 1
+      //      WHEN LEFT(name, 1) = UPPER(LEFT(name, 1)) THEN 2
+      //      ELSE 3
+      //  END`,
+      // )
+      .addOrderBy(sortBy, sortDirection)
       .limit(pageSize)
       .offset(offset)
       .getMany();
@@ -92,24 +85,6 @@ export class BlogsQueryRepository {
         isMembership: i.isMembership,
       })),
     };
-  }
-
-  async findBlogById(blogId: string): Promise<BlogViewModel | null> {
-    if (validateUUID(blogId)) {
-      const foundBlog = await this.dataSource.query(
-        `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
-FROM public."Blogs"
-WHERE id = $1`,
-        [blogId],
-      );
-      if (foundBlog.length > 0) {
-        return foundBlog[0];
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
   }
 
   async getBlogById(blogId: string): Promise<BlogViewModel | null> {

@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { UserAccountDataEntity } from '../../../super-admin/users/domain/userAccountData.entity';
 import { PostEntity } from '../../posts/domain/posts.entity';
-import { BlogEntity } from '../../../super-admin/blogs/domain/blogs.entity';
 
 @Entity({ name: 'postLikes' })
 export class PostLikeEntity extends BaseEntity {
@@ -45,10 +44,4 @@ export class PostLikeEntity extends BaseEntity {
   post: PostEntity;
   @Column({ nullable: false })
   postId: string;
-
-  @ManyToOne(() => BlogEntity, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  blog: BlogEntity;
-  @Column({ nullable: false })
-  blogId: string;
 }

@@ -120,11 +120,7 @@ export class DeviceRepository {
   //     .delete({ id: { $ne: deviceId }, userId });
   // }
   async deleteAll() {
-    await this.deviceRepository
-      .createQueryBuilder()
-      .delete()
-      .from('device')
-      .execute();
+    await this.deviceRepository.createQueryBuilder().delete().execute();
   }
   // для своего теста
   async findDeviceTestByUserId(userId: string) {

@@ -16,13 +16,13 @@ export class PostEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   title: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   shortDescription: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   content: string;
 
   @Column({
@@ -39,12 +39,12 @@ export class PostEntity extends BaseEntity {
   @JoinColumn()
   blog: BlogEntity;
 
-  @OneToMany(() => CommentEntity, (comment) => comment.postId, {
+  @OneToMany(() => CommentEntity, (comment) => comment.post, {
     onDelete: 'CASCADE',
   })
   comment: CommentEntity;
 
-  @OneToMany(() => PostLikeEntity, (like) => like.postId, {
+  @OneToMany(() => PostLikeEntity, (like) => like.post, {
     onDelete: 'CASCADE',
   })
   postLike: PostLikeEntity;

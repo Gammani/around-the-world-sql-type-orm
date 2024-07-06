@@ -1,0 +1,1 @@
+SELECT "p"."id" AS "p_id", "p"."title" AS "p_title", "p"."shortDescription" AS "p_shortDescription", "p"."content" AS "p_content", "p"."createdAt" AS "p_createdAt", "p"."blogId" AS "p_blogId", (SELECT count(*) FROM "postLikes" "like" WHERE "like"."likeStatus" = $1 AND "like"."postId" = "p"."id") AS "likesCount" FROM "posts" "p"

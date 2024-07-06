@@ -53,7 +53,7 @@ export class UserAccountDataEntity extends BaseEntity {
   @OneToMany(() => CommentEntity, (com) => com.userId, {})
   comment: CommentEntity;
 
-  @OneToMany(() => PostLikeEntity, (lke) => lke.userId, {})
+  @OneToMany(() => PostLikeEntity, (like) => like.userId, {})
   postLikes: PostLikeEntity;
 
   @OneToMany(() => CommentLikeEntity, (like) => like.userId, {})

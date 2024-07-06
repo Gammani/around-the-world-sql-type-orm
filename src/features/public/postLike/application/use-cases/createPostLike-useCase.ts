@@ -29,7 +29,6 @@ export class CreatePostLikeUseCase
     createdPostLikeDto.likeStatus = command.likeStatus;
     createdPostLikeDto.addedAt = date;
     createdPostLikeDto.lastUpdate = date;
-    createdPostLikeDto.blogId = command.post.blogId;
     return await this.postLikeRepository.save(createdPostLikeDto);
   }
 }

@@ -38,6 +38,6 @@ export class CommentEntity extends BaseEntity {
   @Column({ nullable: false })
   userId: string;
 
-  @OneToMany(() => CommentLikeEntity, (like) => like.commentId, {})
+  @OneToMany(() => CommentLikeEntity, (like) => like.comment, {})
   commentLike: CommentLikeEntity;
 }

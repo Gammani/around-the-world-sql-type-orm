@@ -7,20 +7,19 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PostEntity } from '../../../public/posts/domain/posts.entity';
-import { PostLikeEntity } from '../../../public/postLike/domain/postLike.entity';
 
 @Entity({ name: 'blogs' })
 export class BlogEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   description: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, collation: 'C' })
   websiteUrl: string;
 
   @CreateDateColumn({
@@ -35,9 +34,4 @@ export class BlogEntity extends BaseEntity {
 
   @OneToMany(() => PostEntity, (post) => post.blogId, { onDelete: 'CASCADE' })
   post: PostEntity;
-
-  @OneToMany(() => PostLikeEntity, (postLike) => postLike.blogId, {
-    onDelete: 'CASCADE',
-  })
-  postLike: PostLikeEntity;
 }

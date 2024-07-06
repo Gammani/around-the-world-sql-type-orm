@@ -86,7 +86,7 @@ export class BlogsRepository {
   }
 
   async deleteAll() {
-    await this.dataSource.query(`DELETE FROM public."Blogs"`);
+    await this.blogRepo.delete({});
   }
   // for tests
   async findBlogByName(blogName: string) {

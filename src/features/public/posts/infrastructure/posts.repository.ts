@@ -40,8 +40,8 @@ export class PostsRepository {
   ): Promise<PostViewModel> {
     await this.dataSource.query(
       `INSERT INTO public."posts"(
-id, title, "shortDescription", content, "blogId", "blogName", "createdAt")
-VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+  id, title, "shortDescription", content, "blogId", "blogName", "createdAt")
+  VALUES ($1, $2, $3, $4, $5, $6, $7);`,
       [
         createdPostDto.id,
         createdPostDto.title,
@@ -79,51 +79,41 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);`,
     blogId: string,
     inputPostModel: UpdateInputPostModelType,
   ): Promise<boolean> {
-    try {
-      await this.dataSource.query(
-        `UPDATE public."Posts"
-SET title=$1, "shortDescription"=$2, content=$3, "blogId"=$4
-WHERE id = $5`,
-        [
-          inputPostModel.title,
-          inputPostModel.shortDescription,
-          inputPostModel.content,
-          blogId,
-          postId,
-        ],
-      );
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    const result = await this.postRepo
+      .createQueryBuilder()
+      .update()
+      .set({
+        title: inputPostModel.title,
+        shortDescription: inputPostModel.shortDescription,
+        content: inputPostModel.content,
+        blogId: blogId,
+      })
+      .where(`id = :postId`, { postId })
+      .execute();
+    return result.affected === 1;
   }
 
   async deletePostById(postId: string): Promise<boolean> {
-    try {
-      await this.dataSource.query(
-        `DELETE FROM public."Posts"
-WHERE id = $1`,
-        [postId],
-      );
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    const result = await this.postRepo
+      .createQueryBuilder()
+      .delete()
+      .from('posts')
+      .where('id = :postId', { postId })
+      .execute();
+    return result.affected === 1;
   }
 
   async deleteAllPostsByBlogId(blogId: string) {
     await this.dataSource.query(
       `DELETE FROM public."Posts"
-WHERE "blogId" = $1`,
+  WHERE "blogId" = $1`,
       [blogId],
     );
     return;
   }
 
   async deleteAll() {
-    await this.dataSource.query(`DELETE FROM public."Posts"`);
+    await this.postRepo.delete({});
   }
 
   // for tests
