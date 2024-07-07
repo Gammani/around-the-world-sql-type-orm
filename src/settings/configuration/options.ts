@@ -8,5 +8,5 @@ export const options: TypeOrmModuleOptions = {
   password: 'sa',
   database: 'around-the-world-typeorm',
   autoLoadEntities: true,
-  synchronize: true,
+  synchronize: false,
 };
