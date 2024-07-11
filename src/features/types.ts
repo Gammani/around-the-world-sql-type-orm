@@ -232,9 +232,6 @@ export type CommentLikeDbType = {
 export type CommentLikeViewDbType = {
   id: string;
   userId: string;
-  login: string;
-  blogId: string;
-  postId: string;
   commentId: string;
   likeStatus: LikeStatus;
   addedAt: Date;
@@ -251,4 +248,19 @@ export type DeviceDtoModelType = {
   ip: string;
   deviceName: string;
   lastActiveDate: string;
+};
+
+export type CommentViewModelType = {
+  id: string;
+  content: string;
+  commentatorInfo: {
+    userId: string;
+    userLogin: string;
+  };
+  createdAt: string;
+  likesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: LikeStatus | string;
+  };
 };

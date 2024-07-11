@@ -1,12 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentViewModel } from '../../api/models/output/comment-output.model';
 import { CommentsQueryRepository } from '../../infrastructure/comments.query.repository';
-import { CommentViewDbType } from '../../../../types';
 
 export class GetQueryCommentByIdCommand {
   constructor(
-    public comment: CommentViewDbType,
-    public userId?: string,
+    public commentId: string,
+    public userId?: string | null,
   ) {}
 }
 
@@ -19,8 +18,8 @@ export class GetQueryCommentByIdUseCase
   async execute(
     command: GetQueryCommentByIdCommand,
   ): Promise<CommentViewModel | null> {
-    return await this.commentsQueryRepository.getQueryCommentByComment(
-      command.comment,
+    return await this.commentsQueryRepository.findCommentById(
+      command.commentId,
       command.userId,
     );
   }

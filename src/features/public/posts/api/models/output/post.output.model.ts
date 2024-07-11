@@ -23,7 +23,7 @@ export type customFilteredPostLikesType = {
 export type ExtendedLikesInfoViewModel = {
   likesCount: number;
   dislikesCount: number;
-  myStatus: LikeStatus;
+  myStatus: LikeStatus | string;
   newestLikes: NewestLikesViewModel[];
 };
 export type PostViewModel = {

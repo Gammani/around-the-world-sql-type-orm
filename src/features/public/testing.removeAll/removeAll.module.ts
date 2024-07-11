@@ -13,6 +13,7 @@ import { UsersModule } from '../../super-admin/users/users.module';
 import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
 import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 import { BlogSuperAdminModule } from '../../super-admin/blogs/blogSuperAdminModule';
+import { CommentModule } from '../comments/comment.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BlogSuperAdminModule } from '../../super-admin/blogs/blogSuperAdminModu
     ExpiredTokenModule,
     SecurityDeviceModule,
     BlogSuperAdminModule,
+    CommentModule,
   ],
   controllers: [TestingRemoveAll],
   providers: [

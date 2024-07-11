@@ -24,9 +24,9 @@ export class TestingRemoveAll {
   @HttpCode(204)
   @Delete()
   async removeAllData() {
-    // await this.commentLikeRepository.deleteAll();
-    // await this.commentsRepository.deleteAll();
-    // await this.postLikeRepository.deleteAll();
+    await this.commentLikeRepository.deleteAll();
+    await this.commentsRepository.deleteAll();
+    await this.postLikeRepository.deleteAll();
     await this.postsRepository.deleteAll();
     await this.blogRepository.deleteAll();
     await this.deviceRepository.deleteAll();

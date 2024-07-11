@@ -23,5 +23,5 @@ export interface RequestWithDeviceId extends Request {
 }
 
 export interface RequestWithUserId extends Request {
-  user?: { userId: string | null | undefined };
+  user?: { userId: string | null };
 }

@@ -18,7 +18,7 @@ import { GetQueryPostsCommand } from '../../posts/application/use-cases/getQuery
 import { GetQueryBlogByIdCommand } from '../application/use-cases/getQueryBlogById.useCase';
 import { Request } from 'express';
 import { PostViewDbType } from '../../../types';
-import { GetPostByIdCommand } from '../../posts/application/use-cases/getPostById.useCase';
+import { GetPostIdByIdCommand } from '../../posts/application/use-cases/getPostIdByIdUseCase';
 import { GetQueryPostByIdCommand } from '../../posts/application/use-cases/getQueryPostById.useCase';
 
 @Controller('blogs')
@@ -104,7 +104,7 @@ export class BlogsController {
     @Req() req: Request & RequestWithUserId,
   ) {
     const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+      new GetPostIdByIdCommand(postId),
     );
     if (foundPost) {
       return await this.commandBus.execute(

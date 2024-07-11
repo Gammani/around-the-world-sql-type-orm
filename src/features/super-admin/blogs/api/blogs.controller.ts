@@ -34,7 +34,7 @@ import { CreatePostByAdminWithBlogIdCommand } from '../../../public/posts/applic
 import { RequestWithUserId } from '../../../public/auth/api/models/input/auth.input.model';
 import { PostsWithPaginationViewModel } from '../../../public/posts/api/models/output/post.output.model';
 import { GetQueryPostsCommand } from '../../../public/posts/application/use-cases/getQueryPostsUseCase';
-import { GetPostByIdCommand } from '../../../public/posts/application/use-cases/getPostById.useCase';
+import { GetPostIdByIdCommand } from '../../../public/posts/application/use-cases/getPostIdByIdUseCase';
 import { UpdatePostByAdminCommand } from '../../../public/posts/application/use-cases/updatePostByAdmin.useCase';
 import { DeletePostByAdminCommand } from '../../../public/posts/application/use-cases/deletePostByAdmin.useCase';
 import { RemoveBlogByAdminCommand } from '../application/use-cases/removeBlogByAdmin.useCase';
@@ -186,7 +186,7 @@ export class BlogsController {
     );
     if (foundBlog) {
       const foundPost: PostViewDbType | null = await this.commandBus.execute(
-        new GetPostByIdCommand(postId),
+        new GetPostIdByIdCommand(postId),
       );
       if (foundPost) {
         await this.commandBus.execute(
@@ -226,7 +226,7 @@ export class BlogsController {
     );
     if (foundBlog) {
       const foundPost = await this.commandBus.execute(
-        new GetPostByIdCommand(postId),
+        new GetPostIdByIdCommand(postId),
       );
       if (foundPost) {
         await this.commandBus.execute(new DeletePostByAdminCommand(postId));
@@ -245,7 +245,7 @@ export class BlogsController {
     @Req() req: Request & RequestWithUserId,
   ) {
     const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+      new GetPostIdByIdCommand(postId),
     );
     if (foundPost && foundPost.blogId === blogId) {
       return await this.commandBus.execute(

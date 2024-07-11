@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsWithPaginationViewModel } from '../../api/models/output/comment-output.model';
 import { CommentsQueryRepository } from '../../infrastructure/comments.query.repository';
-import { ObjectId } from 'mongodb';
 
 export class GetQueryCommentsByPostIdCommand {
   constructor(

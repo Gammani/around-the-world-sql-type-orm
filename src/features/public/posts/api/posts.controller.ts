@@ -27,7 +27,7 @@ import { CommentsWithPaginationViewModel } from '../../comments/api/models/outpu
 import { CommentInputModel } from './models/input/comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetPostByIdCommand } from '../application/use-cases/getPostById.useCase';
+import { GetPostIdByIdCommand } from '../application/use-cases/getPostIdByIdUseCase';
 import { CreatePostLikeCommand } from '../../postLike/application/use-cases/createPostLike-useCase';
 import { GetPostLikeFromUserCommand } from '../../postLike/application/use-cases/getPostLikeFromUser.useCase';
 import { UpdatePostLikeStatusCommand } from '../../postLike/application/use-cases/updatePostLikeStatus.useCase';
@@ -42,7 +42,7 @@ import {
   PostViewDbType,
   UserViewDbModelType,
 } from '../../../types';
-import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
+import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceIdUseCase';
 import { BlogsService } from '../../../super-admin/blogs/application/blogs.service';
 
 @Controller('posts')
@@ -66,18 +66,18 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+    const foundPostId: string | null = await this.commandBus.execute(
+      new GetPostIdByIdCommand(postId),
     );
-    if (foundPost) {
-      const foundUser: UserViewDbModelType | null =
-        await this.commandBus.execute(
-          new GetUserByDeviceIdCommand(req.deviceId),
-        );
-      if (foundUser) {
+
+    if (foundPostId) {
+      const foundUserId: string | null = await this.commandBus.execute(
+        new GetUserIdByDeviceIdCommand(req.deviceId),
+      );
+      if (foundUserId) {
         const foundPostLikeFromUser: PostLikeViewDbType | null =
           await this.commandBus.execute(
-            new GetPostLikeFromUserCommand(postId, foundUser.id),
+            new GetPostLikeFromUserCommand(postId, foundUserId),
           );
         if (foundPostLikeFromUser) {
           await this.commandBus.execute(
@@ -89,8 +89,8 @@ export class PostsController {
         } else {
           await this.commandBus.execute(
             new CreatePostLikeCommand(
-              foundUser,
-              foundPost,
+              foundUserId,
+              foundPostId,
               postLikeModel.likeStatus,
             ),
           );
@@ -114,7 +114,7 @@ export class PostsController {
     },
   ) {
     const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+      new GetPostIdByIdCommand(postId),
     );
     if (foundPost) {
       const foundCommentsWithUserNoName: CommentsWithPaginationViewModel =
@@ -165,16 +165,20 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+    const foundPostId: string | null = await this.commandBus.execute(
+      new GetPostIdByIdCommand(postId),
     );
-    if (foundPost) {
-      const foundUser: UserViewDbModelType = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(req.deviceId),
+    if (foundPostId) {
+      const foundUserId: string | null = await this.commandBus.execute(
+        new GetUserIdByDeviceIdCommand(req.deviceId),
       );
-      if (foundUser) {
-        return await this.commandBus.execute(
-          new CreateCommentCommand(inputCommentModel, foundUser, foundPost),
+      if (foundUserId) {
+        const commentId = await this.commandBus.execute(
+          new CreateCommentCommand(inputCommentModel, foundUserId, foundPostId),
+        );
+        return await this.commentsQueryRepository.findCommentById(
+          commentId,
+          foundUserId,
         );
       } else {
         throw new UnauthorizedException();
@@ -189,12 +193,12 @@ export class PostsController {
     @Param('id') postId: string,
     @Req() req: Request & RequestWithUserId,
   ) {
-    const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+    const foundPostId: string | null = await this.commandBus.execute(
+      new GetPostIdByIdCommand(postId),
     );
-    if (foundPost) {
+    if (foundPostId) {
       return await this.commandBus.execute(
-        new GetQueryPostByIdCommand(foundPost.id, req.user?.userId),
+        new GetQueryPostByIdCommand(foundPostId, req.user?.userId),
       );
       // return console.log(res);
     } else {

@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { DeviceDbViewModelType } from '../../../types';
 import { validate as validateUUID } from 'uuid';
-import { DataSource, getConnection, Not, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DeviceEntity } from '../domain/devices.entity';
-import fs from 'fs/promises';
 
 @Injectable()
 export class DeviceRepository {

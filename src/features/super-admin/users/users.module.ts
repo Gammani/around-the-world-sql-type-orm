@@ -3,7 +3,7 @@ import { UsersController } from './api/users.controller';
 import { UsersService } from './application/users.service';
 import { GetUserViewModelByDeviceIdUseCase } from './application/use-cases/getUserViewModelByDeviceId.useCase';
 import { CreateUserUserCase } from './application/use-cases/createUser.useCase';
-import { GetUserByDeviceIdUseCase } from './application/use-cases/getUserByDeviceId.useCase';
+import { GetUserIdByDeviceIdUseCase } from './application/use-cases/getUserIdByDeviceIdUseCase';
 import { GetAllQueryUsersUseCase } from './application/use-cases/getAllQueryUsers.useCase';
 import { GetUserByIdUseCase } from './application/use-cases/getUserById.useCase';
 import { CreateUserByAdminUseCase } from './application/use-cases/createUserByAdmin.useCase';
@@ -14,7 +14,6 @@ import { SecurityDevicesService } from '../../public/devices/application/securit
 import { DeviceRepository } from '../../public/devices/infrastructure/device.repository';
 import { ExpiredTokenRepository } from '../../public/expiredToken/infrastructure/expired.token.repository';
 import { GetUserViewModelByUserIdUseCase } from './application/use-cases/getUserViewModelByUserId.useCase';
-import { GetUserIdByDeviceIdUseCase } from './application/use-cases/getUserIdByDeviceId.useCase';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountDataEntity } from './domain/userAccountData.entity';
@@ -28,7 +27,7 @@ import { SecurityDeviceModule } from '../../public/devices/sequrity.device.modul
 const useCases = [
   CreateUserUserCase,
   GetUserViewModelByDeviceIdUseCase,
-  GetUserByDeviceIdUseCase,
+  GetUserIdByDeviceIdUseCase,
   GetAllQueryUsersUseCase,
   GetUserByIdUseCase,
   CreateUserByAdminUseCase,

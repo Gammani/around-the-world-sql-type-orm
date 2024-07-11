@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -9,7 +10,7 @@ import { UserAccountDataEntity } from '../../../super-admin/users/domain/userAcc
 import { CommentEntity } from '../../comments/domain/comments.entity';
 
 @Entity({ name: 'commentLikes' })
-export class CommentLikeEntity {
+export class CommentLikeEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

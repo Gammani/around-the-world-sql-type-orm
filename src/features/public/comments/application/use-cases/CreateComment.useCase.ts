@@ -5,12 +5,13 @@ import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { PostViewDbType, UserViewDbModelType } from '../../../../types';
 import { CreatedCommentDtoType } from '../../api/models/input/comment.input.model';
 import { v1 as uuidv1 } from 'uuid';
+import { CommentEntity } from '../../domain/comments.entity';
 
 export class CreateCommentCommand {
   constructor(
     public inputCommentModel: CommentInputModel,
-    public user: UserViewDbModelType,
-    public post: PostViewDbType,
+    public userId: string,
+    public postId: string,
   ) {}
 }
 
@@ -20,16 +21,12 @@ export class CreateCommentUseCase
 {
   constructor(private commentsRepository: CommentsRepository) {}
 
-  async execute(command: CreateCommentCommand): Promise<CommentViewModel> {
-    const createdComment: CreatedCommentDtoType = {
-      id: uuidv1(),
-      content: command.inputCommentModel.content,
-      createdAt: new Date(),
-      userId: command.user.id,
-      userLogin: command.user.accountData.login,
-      postId: command.post.id,
-      blogId: command.post.blogId,
-    };
-    return await this.commentsRepository.createComment(createdComment);
+  async execute(command: CreateCommentCommand): Promise<string> {
+    const createdComment = new CommentEntity();
+    createdComment.content = command.inputCommentModel.content;
+    createdComment.createdAt = new Date();
+    createdComment.userId = command.userId;
+    createdComment.postId = command.postId;
+    return await this.commentsRepository.save(createdComment);
   }
 }

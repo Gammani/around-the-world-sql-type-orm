@@ -12,7 +12,7 @@ import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike
 import { GetQueryCommentsByPostIdUseCase } from './application/use-cases/getQueryCommentsByPostId.useCase';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateCommentUseCase } from './application/use-cases/CreateComment.useCase';
-import { GetCommentByIdUseCase } from './application/use-cases/getCommentById.useCase';
+import { GetUserIdByCommentIdUseCase } from './application/use-cases/getUserIdByCommentIdUseCase';
 import { GetQueryCommentByIdUseCase } from './application/use-cases/getQueryCommentById.useCase';
 import { UpdateCommentUseCase } from './application/use-cases/updateComment.useCase';
 import { DeleteCommentByIdUseCase } from './application/use-cases/deleteCommentById.useCase';
@@ -30,17 +30,19 @@ import { UsersModule } from '../../super-admin/users/users.module';
 import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 import { CommentEntity } from './domain/comments.entity';
 import { CommentLikeEntity } from '../commentLike/domain/commentLike.entity';
+import { GetCommentIdByIdUseCase } from './application/use-cases/getCommentIdByIdUseCase';
 
 const useCases = [
   GetQueryCommentsByPostIdUseCase,
   CreateCommentUseCase,
-  GetCommentByIdUseCase,
+  GetUserIdByCommentIdUseCase,
   GetQueryCommentByIdUseCase,
   UpdateCommentUseCase,
   DeleteCommentByIdUseCase,
   GetCommentLikeUseCase,
   UpdateCommentLikeUseCase,
   CreateCommentLikeUseCase,
+  GetCommentIdByIdUseCase,
 ];
 
 @Module({

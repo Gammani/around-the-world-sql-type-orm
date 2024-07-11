@@ -18,7 +18,7 @@ export class PostsRepository {
     @InjectRepository(PostEntity) private postRepo: Repository<PostEntity>,
   ) {}
 
-  async findPostById(postId: string): Promise<PostViewDbType | null> {
+  async findPostIdById(postId: string): Promise<string | null> {
     if (validateUUID(postId)) {
       const foundPost = await this.postRepo.find({
         where: {
@@ -26,7 +26,7 @@ export class PostsRepository {
         },
       });
       if (foundPost.length > 0) {
-        return foundPost[0];
+        return foundPost[0].id;
       } else {
         return null;
       }

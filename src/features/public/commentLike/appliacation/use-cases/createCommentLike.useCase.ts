@@ -1,18 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentLikeRepository } from '../../infrastructure/commentLike.repository';
-import {
-  CommentViewDbType,
-  CreateCommentLikeDtoType,
-  LikeStatus,
-} from '../../../../types';
-import { v1 as uuidv1 } from 'uuid';
+import { LikeStatus } from '../../../../types';
+import { CommentLikeEntity } from '../../domain/commentLike.entity';
 
 export class CreateCommentLikeCommand {
   constructor(
-    public comment: CommentViewDbType,
+    public commentId: string,
     public likeStatus: LikeStatus,
     public userId: string,
-    public userLogin: string,
   ) {}
 }
 
@@ -23,20 +18,14 @@ export class CreateCommentLikeUseCase
   constructor(private commentLikeRepository: CommentLikeRepository) {}
 
   async execute(command: CreateCommentLikeCommand) {
-    const createCommentPostLike: CreateCommentLikeDtoType = {
-      id: uuidv1(),
-      userId: command.userId,
-      login: command.userLogin,
-      blogId: command.comment.blogId,
-      postId: command.comment.postId,
-      commentId: command.comment.id,
-      likeStatus: command.likeStatus,
-      addedAt: new Date(),
-      lastUpdate: new Date(),
-    };
+    const createCommentPostLike = new CommentLikeEntity();
+    const date = new Date();
+    createCommentPostLike.userId = command.userId;
+    createCommentPostLike.commentId = command.commentId;
+    createCommentPostLike.likeStatus = command.likeStatus;
+    createCommentPostLike.addedAt = date;
+    createCommentPostLike.lastUpdate = date;
 
-    return await this.commentLikeRepository.createCommentLike(
-      createCommentPostLike,
-    );
+    return await this.commentLikeRepository.save(createCommentPostLike);
   }
 }

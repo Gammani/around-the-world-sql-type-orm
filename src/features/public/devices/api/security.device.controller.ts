@@ -20,7 +20,6 @@ import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceBy
 import { DeleteAllSessionExcludeCurrentCommand } from '../application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 import { UsersService } from '../../../super-admin/users/application/users.service';
 import { UserViewDbModelType } from '../../../types';
-import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceId.useCase';
 
 @UseGuards(CheckRefreshToken)
@@ -70,10 +69,10 @@ export class SecurityDeviceController {
     if (foundDeviceByDeviceId) {
       const foundUserByDeviceIdFromToken: UserViewDbModelType | null =
         await this.commandBus.execute(
-          new GetUserByDeviceIdCommand(req.deviceId),
+          new GetUserIdByDeviceIdCommand(req.deviceId),
         );
       const foundUserFromUriParam: UserViewDbModelType | null =
-        await this.commandBus.execute(new GetUserByDeviceIdCommand(deviceId));
+        await this.commandBus.execute(new GetUserIdByDeviceIdCommand(deviceId));
       if (
         foundUserFromUriParam?.id.toString() ===
         foundUserByDeviceIdFromToken?.id.toString()

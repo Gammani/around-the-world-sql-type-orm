@@ -1,78 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CommentViewModel } from '../api/models/output/comment-output.model';
-import { CommentViewDbType, LikeStatus } from '../../../types';
+import { LikeStatus } from '../../../types';
 import { CreatedCommentDtoType } from '../api/models/input/comment.input.model';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';
+import { CommentEntity } from '../domain/comments.entity';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
+    @InjectRepository(CommentEntity)
+    private commentRepo: Repository<CommentEntity>,
   ) {}
 
-  async findCommentById(commentId: string): Promise<CommentViewDbType | null> {
+  async findUserIdByCommentId(commentId: string): Promise<string | null> {
     if (validateUUID(commentId)) {
-      const foundComment = await this.dataSource.query(
-        `SELECT com.id, com.content, com."createdAt", com."userId", com."postId", com."blogId", "user".login as "userLogin"
-FROM public."Comments" as com
-LEFT JOIN public."UserAccountData" as "user" 
-ON "user".id = com."userId"
-WHERE "com"."id" = $1`,
-        [commentId],
-      );
+      const foundComment = await this.commentRepo.find({
+        where: {
+          id: commentId,
+        },
+      });
       if (foundComment.length > 0) {
-        return {
-          id: foundComment[0].id,
-          content: foundComment[0].content,
-          createdAt: foundComment[0].createdAt,
-          commentatorInfo: {
-            userId: foundComment[0].userId,
-            userLogin: foundComment[0].userLogin,
-          },
-          postId: foundComment[0].postId,
-          blogId: foundComment[0].blogId,
-        };
+        return foundComment[0].userId;
       } else {
         return null;
       }
     }
     return null;
   }
+  async findCommentId(commentId: string): Promise<string | null> {
+    if (validateUUID(commentId)) {
+      const foundComment = await this.commentRepo.find({
+        where: {
+          id: commentId,
+        },
+      });
+      if (foundComment.length > 0) {
+        return foundComment[0].id;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 
-  async createComment(
-    createdCommentDto: CreatedCommentDtoType,
-  ): Promise<CommentViewModel> {
-    await this.dataSource.query(
-      `INSERT INTO public."Comments"(
-id, content, "createdAt", "userId", "postId", "blogId")
-VALUES ($1, $2, $3, $4, $5, $6)`,
-      [
-        createdCommentDto.id,
-        createdCommentDto.content,
-        createdCommentDto.createdAt,
-        createdCommentDto.userId,
-        createdCommentDto.postId,
-        createdCommentDto.blogId,
-      ],
-    );
-    console.log(createdCommentDto);
-    return {
-      id: createdCommentDto.id,
-      content: createdCommentDto.content,
-      commentatorInfo: {
-        userId: createdCommentDto.userId,
-        userLogin: createdCommentDto.userLogin,
-      },
-      createdAt: createdCommentDto.createdAt.toISOString(),
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikeStatus.None,
-      },
-    };
+  async save(entity: CommentEntity): Promise<string> {
+    const result = await entity.save();
+    return result.id;
   }
 
   // async findCommentByPostId(postId: string) {
@@ -82,27 +60,30 @@ VALUES ($1, $2, $3, $4, $5, $6)`,
   //   return this.CommentModel.findOne({ content: content });
   // }
   async updateComment(commentId: string, content: string): Promise<boolean> {
-    try {
-      await this.dataSource.query(
-        `UPDATE public."Comments"
-SET content = $1
-WHERE id = $2`,
-        [content, commentId],
-      );
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    const result = await this.commentRepo
+      .createQueryBuilder()
+      .update()
+      .set({
+        content: content,
+      })
+      .where(`id = :commentId`, { commentId })
+      .execute();
+    return result.affected === 1;
   }
   async deleteComment(commentId: string): Promise<boolean> {
-    return await this.dataSource.query(
-      `DELETE FROM public."Comments"
-WHERE id = $1`,
-      [commentId],
-    );
+    //     return await this.dataSource.query(
+    //       `DELETE FROM public."Comments"
+    // WHERE id = $1`,
+    //       [commentId],
+    //     );
+    const result = await this.commentRepo
+      .createQueryBuilder()
+      .delete()
+      .where('id = :commentId', { commentId })
+      .execute();
+    return result.affected === 1;
   }
   async deleteAll() {
-    return await this.dataSource.query(`DELETE FROM public."Comments"`);
+    return await this.commentRepo.delete({});
   }
 }

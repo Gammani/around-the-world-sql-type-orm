@@ -15,16 +15,14 @@ export class GetCommentLikeUseCase
 {
   constructor(private commentLikeRepository: CommentLikeRepository) {}
 
-  async execute(
-    command: GetCommentLikeCommand,
-  ): Promise<CommentLikeViewDbType | null> {
-    const foundCommentLike: CommentLikeViewDbType | null =
+  async execute(command: GetCommentLikeCommand): Promise<string | null> {
+    const foundCommentLikeId: string | null =
       await this.commentLikeRepository.findLike(
         command.commentId,
         command.userId,
       );
-    if (foundCommentLike) {
-      return foundCommentLike;
+    if (foundCommentLikeId) {
+      return foundCommentLikeId;
     } else {
       return null;
     }

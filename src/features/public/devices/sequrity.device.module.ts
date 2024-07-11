@@ -11,7 +11,7 @@ import { DeleteCurrentSessionUseCase } from './application/use-cases/deleteCurre
 import { FoundDeviceFromUserUseCase } from './application/use-cases/foundDeviceFromUserUseCase';
 import { GetDeviceByDeviceIdUseCase } from './application/use-cases/getDeviceByDeviceId.useCase';
 import { DeleteAllSessionExcludeCurrentUseCase } from './application/use-cases/deleteAllSessionExcludeCurrent.useCase';
-import { GetUserByDeviceIdUseCase } from '../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
+import { GetUserIdByDeviceIdUseCase } from '../../super-admin/users/application/use-cases/getUserIdByDeviceIdUseCase';
 import { UsersService } from '../../super-admin/users/application/users.service';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
@@ -27,7 +27,7 @@ const useCases = [
   DeleteCurrentSessionUseCase,
   AddDeviceUseCase,
   FoundDeviceFromUserUseCase,
-  GetUserByDeviceIdUseCase,
+  GetUserIdByDeviceIdUseCase,
   GetDeviceByDeviceIdUseCase,
   AddExpiredRefreshTokenUseCase,
   DeleteAllSessionExcludeCurrentUseCase,

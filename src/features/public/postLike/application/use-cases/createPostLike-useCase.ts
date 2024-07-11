@@ -1,16 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostLikeRepository } from '../../infrastructure/postLike.repository';
-import {
-  LikeStatus,
-  PostViewDbType,
-  UserViewDbModelType,
-} from '../../../../types';
+import { LikeStatus } from '../../../../types';
 import { PostLikeEntity } from '../../domain/postLike.entity';
 
 export class CreatePostLikeCommand {
   constructor(
-    public user: UserViewDbModelType,
-    public post: PostViewDbType,
+    public userId: string,
+    public postId: string,
     public likeStatus: LikeStatus,
   ) {}
 }
@@ -24,8 +20,8 @@ export class CreatePostLikeUseCase
   async execute(command: CreatePostLikeCommand) {
     const date = new Date();
     const createdPostLikeDto = new PostLikeEntity();
-    createdPostLikeDto.userId = command.user.id;
-    createdPostLikeDto.postId = command.post.id;
+    createdPostLikeDto.userId = command.userId;
+    createdPostLikeDto.postId = command.postId;
     createdPostLikeDto.likeStatus = command.likeStatus;
     createdPostLikeDto.addedAt = date;
     createdPostLikeDto.lastUpdate = date;

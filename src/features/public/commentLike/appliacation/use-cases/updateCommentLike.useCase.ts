@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentLikeRepository } from '../../infrastructure/commentLike.repository';
-import { CommentLikeViewDbType, LikeStatus } from '../../../../types';
+import { LikeStatus } from '../../../../types';
 
 export class UpdateCommentLikeCommand {
   constructor(
     public likeStatus: LikeStatus,
-    public commentLike: CommentLikeViewDbType,
+    public commentLikeId: string,
   ) {}
 }
 
@@ -18,7 +18,7 @@ export class UpdateCommentLikeUseCase
   async execute(command: UpdateCommentLikeCommand) {
     return await this.commentLikeRepository.updateLikeStatus(
       command.likeStatus,
-      command.commentLike,
+      command.commentLikeId,
     );
   }
 }

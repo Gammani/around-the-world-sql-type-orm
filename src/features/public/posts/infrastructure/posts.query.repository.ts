@@ -9,6 +9,7 @@ import { DataSource, Repository } from 'typeorm';
 import { PostEntity } from '../domain/posts.entity';
 import { PostLikeEntity } from '../../postLike/domain/postLike.entity';
 import { PaginationViewModel } from '../../../../infrastructure/helpres/pagination.view.mapper';
+import { validate as validateUUID } from 'uuid';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -90,7 +91,7 @@ export class PostsQueryRepository {
                 .andWhere('postLike.likeStatus = :likeStatus', {
                   likeStatus: LikeStatus.Like,
                 })
-                .orderBy('"createdAt"', 'DESC')
+                .orderBy('"addedAt"', 'DESC')
                 .limit(3);
             }, 'agg');
         }, 'newestLikes')
@@ -146,7 +147,7 @@ export class PostsQueryRepository {
                 .andWhere('postLike.likeStatus = :likeStatus', {
                   likeStatus: LikeStatus.Like,
                 })
-                .orderBy('"createdAt"', 'DESC')
+                .orderBy('"addedAt"', 'DESC')
                 .limit(3);
             }, 'agg');
         }, 'newestLikes')
@@ -172,61 +173,66 @@ export class PostsQueryRepository {
   async findPostById(
     postId: string,
     userId?: string | null | undefined,
-  ): Promise<PostViewModel | null | any> {
-    const foundPost = await this.postRepo.find({
-      relations: {
-        blog: true,
-      },
-      where: { id: postId },
-    });
-
-    const foundLikes = await this.postLikesRepo.find({
-      relations: {
-        user: true,
-        post: true,
-      },
-      where: {
-        post: {
-          id: postId,
+  ): Promise<PostViewModel | null> {
+    if (validateUUID(postId)) {
+      const foundPost = await this.postRepo.find({
+        relations: {
+          blog: true,
         },
-      },
-      order: {
-        likeStatus: 'DESC',
-      },
-    });
+        where: { id: postId },
+      });
 
-    const likes = foundLikes.filter((like) => like.likeStatus === 'Like');
-    const dislike = foundLikes.filter(
-      (dislike) => dislike.likeStatus === 'Dislike',
-    );
-    const myStatus = foundLikes.filter((status) => status.userId === userId);
-
-    const newWestLikes = likes.slice(0, 3).map((like) => {
-      return {
-        addedAt: like.addedAt.toISOString(),
-        userId: like.userId,
-        login: like.user.login,
-      };
-    });
-
-    if (foundPost.length > 0) {
-      return {
-        id: foundPost[0].id,
-        title: foundPost[0].title,
-        shortDescription: foundPost[0].shortDescription,
-        content: foundPost[0].content,
-        blogId: foundPost[0].blogId,
-        blogName: foundPost[0].blog.name,
-        createdAt: foundPost[0].createdAt,
-        extendedLikesInfo: {
-          likesCount: likes.length,
-          dislikesCount: dislike.length,
-          myStatus: myStatus.length > 0 ? myStatus[0].likeStatus : 'None',
-          newestLikes: newWestLikes,
+      const foundLikes = await this.postLikesRepo.find({
+        relations: {
+          user: true,
+          post: true,
         },
-      };
+        where: {
+          post: {
+            id: postId,
+          },
+        },
+        order: {
+          addedAt: 'DESC',
+        },
+      });
+
+      const likes = foundLikes.filter((like) => like.likeStatus === 'Like');
+      const dislike = foundLikes.filter(
+        (dislike) => dislike.likeStatus === 'Dislike',
+      );
+      const myStatus = foundLikes.filter((status) => status.userId === userId);
+
+      const newWestLikes = likes.slice(0, 3).map((like) => {
+        return {
+          addedAt: like.addedAt.toISOString(),
+          userId: like.userId,
+          login: like.user.login,
+        };
+      });
+
+      if (foundPost.length > 0) {
+        return {
+          id: foundPost[0].id,
+          title: foundPost[0].title,
+          shortDescription: foundPost[0].shortDescription,
+          content: foundPost[0].content,
+          blogId: foundPost[0].blogId,
+          blogName: foundPost[0].blog.name,
+          createdAt: foundPost[0].createdAt.toISOString(),
+          extendedLikesInfo: {
+            likesCount: likes.length,
+            dislikesCount: dislike.length,
+            myStatus:
+              myStatus.length > 0 ? myStatus[0].likeStatus : LikeStatus.None,
+            newestLikes: newWestLikes,
+          },
+        };
+      }
+      return null;
+    } else {
+      return null;
     }
-    return;
   }
 
   async getPostItemsViewModel(items: any[]): Promise<PostViewModel[]> {

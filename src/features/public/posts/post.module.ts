@@ -14,7 +14,7 @@ import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
 import { GetQueryPostsUseCase } from './application/use-cases/getQueryPostsUseCase';
 import { CreatePostByAdminWithBlogIdUseCase } from './application/use-cases/createPostByAdminWithBlogId.useCase';
-import { GetPostByIdUseCase } from './application/use-cases/getPostById.useCase';
+import { GetPostIdByIdUseCase } from './application/use-cases/getPostIdByIdUseCase';
 import { CreatePostLikeUseCase } from '../postLike/application/use-cases/createPostLike-useCase';
 import { GetPostLikeFromUserUseCase } from '../postLike/application/use-cases/getPostLikeFromUser.useCase';
 import { UpdatePostLikeStatusUseCase } from '../postLike/application/use-cases/updatePostLikeStatus.useCase';
@@ -38,11 +38,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostEntity } from './domain/posts.entity';
 import { PostLikeEntity } from '../postLike/domain/postLike.entity';
 import { BlogSuperAdminModule } from '../../super-admin/blogs/blogSuperAdminModule';
+import { CommentModule } from '../comments/comment.module';
 
 const useCases = [
   GetQueryPostsUseCase,
   CreatePostByAdminWithBlogIdUseCase,
-  GetPostByIdUseCase,
+  GetPostIdByIdUseCase,
   CreatePostLikeUseCase,
   GetPostLikeFromUserUseCase,
   UpdatePostLikeStatusUseCase,
@@ -61,6 +62,7 @@ const useCases = [
     UsersModule,
     SecurityDeviceModule,
     BlogSuperAdminModule,
+    CommentModule,
   ],
   controllers: [PostsController],
   providers: [

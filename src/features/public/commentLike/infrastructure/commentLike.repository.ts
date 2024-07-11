@@ -1,112 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CommentLikeViewDbType,
-  CreateCommentLikeDtoType,
-  LikeStatus,
-} from '../../../types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { CommentLikeViewDbType, LikeStatus } from '../../../types';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { CommentLikeEntity } from '../domain/commentLike.entity';
 
 @Injectable()
 export class CommentLikeRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(CommentLikeEntity)
+    private commentLikeRepo: Repository<CommentLikeEntity>,
+  ) {}
 
-  async findLike(
-    commentId: string,
-    userId: string,
-  ): Promise<CommentLikeViewDbType | null> {
-    const foundLike: CommentLikeViewDbType[] = await this.dataSource.query(
-      `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
-FROM public."CommentsLikes"
-WHERE "commentId" = $1 AND "userId" = $2`,
-      [commentId, userId],
-    );
+  async findLike(commentId: string, userId: string): Promise<string | null> {
+    const foundLike = await this.commentLikeRepo.find({
+      where: {
+        commentId: commentId,
+        userId: userId,
+      },
+    });
     if (foundLike.length > 0) {
-      return foundLike[0];
+      return foundLike[0].id;
     } else {
       return null;
     }
   }
 
-  async createCommentLike(createdCommentLikeDto: CreateCommentLikeDtoType) {
-    await this.dataSource.query(
-      `INSERT INTO public."CommentsLikes"(
-id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate")
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-      [
-        createdCommentLikeDto.id,
-        createdCommentLikeDto.userId,
-        createdCommentLikeDto.login,
-        createdCommentLikeDto.blogId,
-        createdCommentLikeDto.postId,
-        createdCommentLikeDto.commentId,
-        createdCommentLikeDto.likeStatus,
-        createdCommentLikeDto.addedAt,
-        createdCommentLikeDto.lastUpdate,
-      ],
-    );
-    return;
+  async save(entity: CommentLikeEntity): Promise<string> {
+    const result = await entity.save();
+    return result.id;
   }
 
-  async updateLikeStatus(
-    likeStatus: LikeStatus,
-    commentLike: CommentLikeViewDbType,
-  ) {
-    await this.dataSource.query(
-      `UPDATE public."CommentsLikes"
-SET "likeStatus" = $1
-WHERE id = $2`,
-      [likeStatus, commentLike.id],
+  async updateLikeStatus(likeStatus: LikeStatus, commentLikeId: string) {
+    const date = new Date();
+    const result = await this.commentLikeRepo.update(
+      {
+        id: commentLikeId,
+      },
+      {
+        likeStatus: likeStatus,
+        lastUpdate: date,
+      },
     );
-    return;
+    return result.affected === 1;
   }
 
-  async getMyStatus(
-    commentId: string,
-    userId?: string,
-  ): Promise<LikeStatus | null> {
-    if (userId) {
-      const myStatus = await this.dataSource.query(
-        `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
-FROM public."CommentsLikes"
-WHERE "commentId" = $1 AND "userId" = $2`,
-        [commentId, userId],
-      );
-      return myStatus[0].likeStatus;
-    } else {
-      return null;
-    }
-  }
-
-  async getLikesCount(commentId: string): Promise<number> {
-    const foundLikes = await this.dataSource.query(
-      `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
-FROM public."CommentsLikes"
-WHERE "commentId" = $1 AND "likeStatus" = $2`,
-      [commentId, LikeStatus.Like],
-    );
-    return foundLikes.length;
-  }
-
-  async getDislikesCount(commentId: string): Promise<number> {
-    const foundLikes = await this.dataSource.query(
-      `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
-FROM public."CommentsLikes"
-WHERE "commentId" = $1 AND "likeStatus" = $2`,
-      [commentId, LikeStatus.Dislike],
-    );
-    return foundLikes.length;
-  }
-
-  async deleteCommentLikesByPostId(commentId: string) {
-    return await this.dataSource.query(
-      `DELETE FROM public."CommentsLikes"
-WHERE "commentId" = $1`,
-      [commentId],
-    );
+  async deleteCommentLikesByPostId(commentId: string): Promise<boolean> {
+    const result = await this.commentLikeRepo
+      .createQueryBuilder()
+      .delete()
+      .where('id = :commentId', { commentId })
+      .execute();
+    return result.affected === 1;
   }
 
   async deleteAll() {
-    await this.dataSource.query(`DELETE FROM public."CommentsLikes"`);
+    await this.commentLikeRepo.delete({});
   }
 }
