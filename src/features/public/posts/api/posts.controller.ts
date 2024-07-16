@@ -40,8 +40,7 @@ import { UsersService } from '../../../super-admin/users/application/users.servi
 import {
   PostLikeViewDbType,
   PostViewDbType,
-  UserViewDbModelType,
-} from '../../../types';
+} from '../../../../infrastructure/helpres/types';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceIdUseCase';
 import { BlogsService } from '../../../super-admin/blogs/application/blogs.service';
 

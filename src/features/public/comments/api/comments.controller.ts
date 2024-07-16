@@ -32,7 +32,7 @@ import { UpdateCommentLikeCommand } from '../../commentLike/appliacation/use-cas
 import { CreateCommentLikeCommand } from '../../commentLike/appliacation/use-cases/createCommentLike.useCase';
 import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { CommentViewModelType } from '../../../types';
+import { CommentViewModelType } from '../../../../infrastructure/helpres/types';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceIdUseCase';
 import { GetCommentIdByIdCommand } from '../application/use-cases/getCommentIdByIdUseCase';
 

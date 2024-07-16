@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostLikeRepository } from '../../infrastructure/postLike.repository';
-import { LikeStatus } from '../../../../types';
+import { LikeStatus } from '../../../../../infrastructure/helpres/types';
 import { PostLikeEntity } from '../../domain/postLike.entity';
 
 export class CreatePostLikeCommand {

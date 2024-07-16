@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ExpiredTokenRepository } from '../../expiredToken/infrastructure/expired.token.repository';
 import { JwtService } from '../application/jwt.service';
-import { TokenPayloadType } from '../../../types';
+import { TokenPayloadType } from '../../../../infrastructure/helpres/types';
 
 @Injectable()
 export class JwtAccessTokenGuard extends AuthGuard('jwt') {}

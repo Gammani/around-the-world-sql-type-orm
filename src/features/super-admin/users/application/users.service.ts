@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
 import { SecurityDevicesService } from '../../../public/devices/application/security.devices.service';
-import { UserViewDbModelType } from '../../../types';
+import { UserViewDbModelType } from '../../../../infrastructure/helpres/types';
 import { UsersRepository } from '../infrastructure/users.repository';
 
 @Injectable()

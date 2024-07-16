@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { TokenPayloadType } from '../../features/types';
+import { TokenPayloadType } from '../helpres/types';
 import { JwtService } from '../../features/public/auth/application/jwt.service';
 import { SecurityDevicesService } from '../../features/public/devices/application/security.devices.service';
 import { RequestWithUserId } from '../../features/public/auth/api/models/input/auth.input.model';

@@ -2,7 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentInputModel } from '../../../posts/api/models/input/comment.input.model';
 import { CommentViewModel } from '../../api/models/output/comment-output.model';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { PostViewDbType, UserViewDbModelType } from '../../../../types';
+import {
+  PostViewDbType,
+  UserViewDbModelType,
+} from '../../../../../infrastructure/helpres/types';
 import { CreatedCommentDtoType } from '../../api/models/input/comment.input.model';
 import { v1 as uuidv1 } from 'uuid';
 import { CommentEntity } from '../../domain/comments.entity';

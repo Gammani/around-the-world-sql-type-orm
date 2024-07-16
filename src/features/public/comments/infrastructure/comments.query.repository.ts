@@ -3,13 +3,17 @@ import {
   CommentsWithPaginationViewModel,
   CommentViewModel,
 } from '../api/models/output/comment-output.model';
-import { CommentViewModelType, LikeStatus } from '../../../types';
+import {
+  CommentViewModelType,
+  LikeStatus,
+} from '../../../../infrastructure/helpres/types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CommentEntity } from '../domain/comments.entity';
 import { CommentLikeEntity } from '../../commentLike/domain/commentLike.entity';
 import { validate as validateUUID } from 'uuid';
 import { PaginationViewModel } from '../../../../infrastructure/helpres/pagination.view.mapper';
+import { sortedParamOptions } from '../../../../infrastructure/helpres/helpers';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -81,18 +85,13 @@ export class CommentsQueryRepository {
     postId: string,
     userId?: string | null | undefined,
   ): Promise<CommentsWithPaginationViewModel | any> {
-    const pageNumber = isNaN(Number(pageNumberQuery))
-      ? 1
-      : Number(pageNumberQuery);
-    const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-    const validSortFields = ['content', 'createdAt'];
-    const sortBy =
-      sortByQuery && validSortFields.includes(sortByQuery)
-        ? `"${sortByQuery}"`
-        : `"createdAt"`;
-    const sortDirection = sortDirectionQuery === 'asc' ? 'ASC' : 'DESC';
-
-    const offset = (pageNumber - 1) * pageSize;
+    const sortedOptions = sortedParamOptions(
+      pageNumberQuery,
+      pageSizeQuery,
+      ['content', 'createdAt'],
+      sortByQuery,
+      sortDirectionQuery,
+    );
 
     const items = await this.commentRepo
       .createQueryBuilder('c')
@@ -120,9 +119,9 @@ export class CommentsQueryRepository {
       }, 'myStatus')
       .leftJoinAndSelect('c.post', 'post')
       .where('c.postId = :postId', { postId })
-      .orderBy(`c.${sortBy}`, sortDirection)
-      .offset(offset)
-      .limit(pageSize)
+      .orderBy(`c.${sortedOptions.sortBy}`, sortedOptions.sortDirection)
+      .offset(sortedOptions.offset)
+      .limit(sortedOptions.pageSize)
       .getRawMany();
 
     const totalCount = await this.commentRepo
@@ -131,8 +130,8 @@ export class CommentsQueryRepository {
       .getCount();
     return new PaginationViewModel(
       totalCount,
-      pageNumber,
-      pageSize,
+      sortedOptions.pageNumber,
+      sortedOptions.pageSize,
       await this.getCommentItemsViewModel(items),
     );
   }

@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailInputModel } from '../../api/models/input/email.input.model';
 import { EmailManager } from '../../../../adapter/email.manager';
-import { UserViewDbModelType } from '../../../../types';
+import { UserViewDbModelType } from '../../../../../infrastructure/helpres/types';
 import { add } from 'date-fns/add';
 import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 

@@ -4,7 +4,7 @@ import {
   UserDbType,
   UserViewDbModelType,
   UserViewEmailDbType,
-} from '../../../types';
+} from '../../../../infrastructure/helpres/types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';

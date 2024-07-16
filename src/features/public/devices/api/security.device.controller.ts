@@ -19,7 +19,7 @@ import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
 import { DeleteAllSessionExcludeCurrentCommand } from '../application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { UserViewDbModelType } from '../../../types';
+import { UserViewDbModelType } from '../../../../infrastructure/helpres/types';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceId.useCase';
 
 @UseGuards(CheckRefreshToken)

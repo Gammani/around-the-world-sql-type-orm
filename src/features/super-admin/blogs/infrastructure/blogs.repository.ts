@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreatedBlogViewModel } from '../api/models/output/blog.output.model';
-import { BlogViewDbType } from '../../../types';
-import {
-  BlogUpdateModel,
-  CreatedBlogType,
-} from '../api/models/input/blog.input.model';
-import { v1 as uuidv1, validate as validateUUID } from 'uuid';
+import { BlogViewDbType } from '../../../../infrastructure/helpres/types';
+import { BlogUpdateModel } from '../api/models/input/blog.input.model';
+import { validate as validateUUID } from 'uuid';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { BlogEntity } from '../domain/blogs.entity';
@@ -17,31 +13,6 @@ export class BlogsRepository {
     private blogRepo: Repository<BlogEntity>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
-
-  //   async createBlogByAdmin(createdBlogDto: CreatedBlogType): Promise<string> {
-  //     const newBlog = {
-  //       id: uuidv1(),
-  //       name: createdBlogDto.name,
-  //       description: createdBlogDto.description,
-  //       websiteUrl: createdBlogDto.websiteUrl,
-  //       createdAt: new Date(),
-  //       isMembership: false,
-  //     };
-  //     await this.dataSource.query(
-  //       `INSERT INTO public."blogs"(
-  // id, name, description, "websiteUrl", "createdAt", "isMembership")
-  // VALUES ($1, $2, $3, $4, $5, $6);`,
-  //       [
-  //         newBlog.id,
-  //         newBlog.name,
-  //         newBlog.description,
-  //         newBlog.websiteUrl,
-  //         newBlog.createdAt,
-  //         newBlog.isMembership,
-  //       ],
-  //     );
-  //     return newBlog.id;
-  //   }
 
   async save(entity: BlogEntity): Promise<string> {
     const result = await entity.save();

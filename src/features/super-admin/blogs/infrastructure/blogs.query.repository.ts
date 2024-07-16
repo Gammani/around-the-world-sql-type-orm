@@ -7,6 +7,7 @@ import { validate as validateUUID } from 'uuid';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { BlogEntity } from '../domain/blogs.entity';
+import { sortedParamOptions } from '../../../../infrastructure/helpres/helpers';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -24,25 +25,14 @@ export class BlogsQueryRepository {
     pageSizeQuery: string | undefined,
   ): Promise<BlogWithPaginationViewModel> {
     const searchNameTerm = searchNameTermQuery ? searchNameTermQuery : '';
-    const pageNumber = isNaN(Number(pageNumberQuery))
-      ? 1
-      : Number(pageNumberQuery);
-    const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-    const offset = (pageNumber - 1) * pageSize;
-    const validSortFields = [
-      'id',
-      'name',
-      'description',
-      'websiteUrl',
-      'createdAt',
-      'isMembership',
-    ];
-    const sortBy =
-      sortByQuery && validSortFields.includes(sortByQuery)
-        ? `"${sortByQuery}"`
-        : `"createdAt"`;
 
-    const sortDirection = sortDirectionQuery === 'asc' ? 'ASC' : 'DESC';
+    const sortedOptions = sortedParamOptions(
+      pageNumberQuery,
+      pageSizeQuery,
+      ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership'],
+      sortByQuery,
+      sortDirectionQuery,
+    );
 
     const totalBlogs = await this.blogRepo
       .createQueryBuilder('blog')
@@ -57,24 +47,17 @@ export class BlogsQueryRepository {
       .where(`LOWER(blog.name) ILIKE :searchNameTerm`, {
         searchNameTerm: `%${searchNameTerm}%`,
       })
-      // .orderBy(
-      //   `CASE
-      //      WHEN name = UPPER(name) THEN 1
-      //      WHEN LEFT(name, 1) = UPPER(LEFT(name, 1)) THEN 2
-      //      ELSE 3
-      //  END`,
-      // )
-      .addOrderBy(sortBy, sortDirection)
-      .limit(pageSize)
-      .offset(offset)
+      .addOrderBy(sortedOptions.sortBy, sortedOptions.sortDirection)
+      .limit(sortedOptions.pageSize)
+      .offset(sortedOptions.offset)
       .getMany();
 
-    const pageCount = Math.ceil(totalCount / pageSize);
+    const pageCount = Math.ceil(totalCount / sortedOptions.pageSize);
 
     return {
       pagesCount: pageCount,
-      page: pageNumber,
-      pageSize: pageSize,
+      page: sortedOptions.pageNumber,
+      pageSize: sortedOptions.pageSize,
       totalCount: totalCount,
       items: blogs.map((i) => ({
         id: i.id,

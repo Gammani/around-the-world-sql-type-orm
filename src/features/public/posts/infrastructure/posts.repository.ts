@@ -4,7 +4,7 @@ import {
   CreatedPostDtoType,
   UpdateInputPostModelType,
 } from '../api/models/input/post.input.model';
-import { LikeStatus, PostViewDbType } from '../../../types';
+import { LikeStatus } from '../../../../infrastructure/helpres/types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';

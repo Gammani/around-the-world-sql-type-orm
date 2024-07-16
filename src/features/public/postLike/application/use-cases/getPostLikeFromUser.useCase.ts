@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostLikeRepository } from '../../infrastructure/postLike.repository';
-import { PostLikeViewDbType } from '../../../../types';
+import { PostLikeViewDbType } from '../../../../../infrastructure/helpres/types';
 
 export class GetPostLikeFromUserCommand {
   constructor(

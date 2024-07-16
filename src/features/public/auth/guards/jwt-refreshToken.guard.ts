@@ -7,7 +7,10 @@ import {
 import { ExpiredTokenRepository } from '../../expiredToken/infrastructure/expired.token.repository';
 import { JwtService } from '../application/jwt.service';
 import { DeviceRepository } from '../../devices/infrastructure/device.repository';
-import { DeviceDbViewModelType, TokenPayloadType } from '../../../types';
+import {
+  DeviceDbViewModelType,
+  TokenPayloadType,
+} from '../../../../infrastructure/helpres/types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {}

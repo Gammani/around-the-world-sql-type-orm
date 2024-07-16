@@ -22,7 +22,10 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogByAdminCommand } from '../application/use-cases/createBlogByAdmin.useCase';
 import { GetBlogByIdCommand } from '../application/use-cases/getBlogByIdUseCase';
 import { UpdateBlogByAdminCommand } from '../application/use-cases/updateBlogByAdmin.useCase';
-import { BlogViewDbType, PostViewDbType } from '../../../types';
+import {
+  BlogViewDbType,
+  PostViewDbType,
+} from '../../../../infrastructure/helpres/types';
 import { PostsQueryRepository } from '../../../public/posts/infrastructure/posts.query.repository';
 import { PostsService } from '../../../public/posts/application/posts.service';
 import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { UserViewDbModelType, UserViewEmailDbType } from '../../../types';
+import {
+  UserViewDbModelType,
+  UserViewEmailDbType,
+} from '../../../../infrastructure/helpres/types';
 import { UsersRepository } from '../../../super-admin/users/infrastructure/users.repository';
 
 @Injectable()

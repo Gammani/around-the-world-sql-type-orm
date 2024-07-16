@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeviceDbViewModelType } from '../../../types';
+import { DeviceDbViewModelType } from '../../../../infrastructure/helpres/types';
 import { validate as validateUUID } from 'uuid';
 import { DataSource, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';

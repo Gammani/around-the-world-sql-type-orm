@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserViewDbModelType } from '../../../../types';
+import { UserViewDbModelType } from '../../../../../infrastructure/helpres/types';
 import { UsersRepository } from '../../infrastructure/users.repository';
 
 export class GetUserByIdCommand {

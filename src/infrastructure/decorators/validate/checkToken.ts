@@ -1,5 +1,5 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
-import { TokenPayloadType } from '../../../features/types';
+import { TokenPayloadType } from '../../helpres/types';
 import { JwtService } from '../../../features/public/auth/application/jwt.service';
 
 @Injectable()

@@ -5,7 +5,7 @@ import {
 } from '../../api/models/input/post.input.model';
 import { PostViewModel } from '../../api/models/output/post.output.model';
 import { PostsRepository } from '../../infrastructure/posts.repository';
-import { BlogViewDbType } from '../../../../types';
+import { BlogViewDbType } from '../../../../../infrastructure/helpres/types';
 import { v1 as uuidv1 } from 'uuid';
 
 export class CreatePostByAdminCommand {

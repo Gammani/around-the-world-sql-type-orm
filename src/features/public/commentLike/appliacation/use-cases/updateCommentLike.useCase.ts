@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentLikeRepository } from '../../infrastructure/commentLike.repository';
-import { LikeStatus } from '../../../../types';
+import { LikeStatus } from '../../../../../infrastructure/helpres/types';
 
 export class UpdateCommentLikeCommand {
   constructor(

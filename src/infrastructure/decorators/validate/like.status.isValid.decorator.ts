@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { LikeStatus } from '../../../features/types';
+import { LikeStatus } from '../../helpres/types';
 
 export function LikeStatusIsValid(
   property?: string,

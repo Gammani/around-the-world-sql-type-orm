@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CommentViewModel } from '../api/models/output/comment-output.model';
-import { LikeStatus } from '../../../types';
+import { LikeStatus } from '../../../../infrastructure/helpres/types';
 import { CreatedCommentDtoType } from '../api/models/input/comment.input.model';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';

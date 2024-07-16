@@ -20,7 +20,7 @@ import { JwtService } from './features/public/auth/application/jwt.service';
 import { BlogSuperAdminModule } from './features/super-admin/blogs/blogSuperAdminModule';
 import { BlogPublicModule } from './features/public/blogs/blogPublicModule';
 import { options } from './settings/configuration/options';
-import { UsersRepository } from './features/super-admin/users/infrastructure/users.repository';
+import { QuizGameModule } from './features/super-admin/quiz-game/quizGame.module';
 
 @Module({
   imports: [
@@ -36,6 +36,7 @@ import { UsersRepository } from './features/super-admin/users/infrastructure/use
     CommentModule,
     ExpiredTokenModule,
     SecurityDeviceModule,
+    QuizGameModule,
   ],
   controllers: [AppController],
   providers: [

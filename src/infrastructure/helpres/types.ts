@@ -264,3 +264,11 @@ export type CommentViewModelType = {
     myStatus: LikeStatus | string;
   };
 };
+
+export type sortedOptionsType = {
+  pageNumber: number;
+  pageSize: number;
+  sortBy: string;
+  sortDirection: 'ASC' | 'DESC';
+  offset: number;
+};

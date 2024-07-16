@@ -3,13 +3,14 @@ import {
   PostsWithPaginationViewModel,
   PostViewModel,
 } from '../api/models/output/post.output.model';
-import { LikeStatus } from '../../../types';
+import { LikeStatus } from '../../../../infrastructure/helpres/types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PostEntity } from '../domain/posts.entity';
 import { PostLikeEntity } from '../../postLike/domain/postLike.entity';
 import { PaginationViewModel } from '../../../../infrastructure/helpres/pagination.view.mapper';
 import { validate as validateUUID } from 'uuid';
+import { sortedParamOptions } from '../../../../infrastructure/helpres/helpers';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -28,27 +29,21 @@ export class PostsQueryRepository {
     userId?: string | null | undefined,
     blogId?: string,
   ): Promise<PostsWithPaginationViewModel | any> {
-    const pageNumber = isNaN(Number(pageNumberQuery))
-      ? 1
-      : Number(pageNumberQuery);
-    const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-    const validSortFields = [
-      'id',
-      'title',
-      'shortDescription',
-      'content',
-      'blogId',
-      'blogName',
-      'createdAt',
-    ];
-    const sortBy =
-      sortByQuery && validSortFields.includes(sortByQuery)
-        ? `${sortByQuery}`
-        : `"createdAt"`;
-    // const sortBy = sortByQuery === '' ? `${sortByQuery}` : 'createdAt';
-    const sortDirection = sortDirectionQuery === 'asc' ? 'ASC' : 'DESC';
-
-    const offset = (pageNumber - 1) * pageSize;
+    const sortedOptions = sortedParamOptions(
+      pageNumberQuery,
+      pageSizeQuery,
+      [
+        'id',
+        'title',
+        'shortDescription',
+        'content',
+        'blogId',
+        'blogName',
+        'createdAt',
+      ],
+      sortByQuery,
+      sortDirectionQuery,
+    );
 
     let totalCount;
     let items;
@@ -98,11 +93,13 @@ export class PostsQueryRepository {
         .leftJoinAndSelect('p.blog', 'blog')
         .where('p.blogId = :blogId', { blogId })
         .orderBy(
-          `${sortBy}` === 'blogName' ? `blog.name` : `p.${sortBy}`,
-          sortDirection,
+          `${sortedOptions.sortBy}` === 'blogName'
+            ? `blog.name`
+            : `p.${sortedOptions.sortBy}`,
+          sortedOptions.sortDirection,
         )
-        .offset(offset)
-        .limit(pageSize)
+        .offset(sortedOptions.offset)
+        .limit(sortedOptions.pageSize)
         .getRawMany();
 
       totalCount = await this.postRepo
@@ -153,11 +150,13 @@ export class PostsQueryRepository {
         }, 'newestLikes')
         .leftJoinAndSelect('p.blog', 'blog')
         .orderBy(
-          `${sortBy}` === 'blogName' ? `blog.name` : `p.${sortBy}`,
-          sortDirection,
+          `${sortedOptions.sortBy}` === 'blogName'
+            ? `blog.name`
+            : `p.${sortedOptions.sortBy}`,
+          sortedOptions.sortDirection,
         )
-        .offset(offset)
-        .limit(pageSize)
+        .offset(sortedOptions.offset)
+        .limit(sortedOptions.pageSize)
         .getRawMany();
 
       totalCount = await this.postRepo.createQueryBuilder().getCount();
@@ -165,8 +164,8 @@ export class PostsQueryRepository {
 
     return new PaginationViewModel(
       totalCount,
-      pageNumber,
-      pageSize,
+      sortedOptions.pageNumber,
+      sortedOptions.pageSize,
       await this.getPostItemsViewModel(items),
     );
   }

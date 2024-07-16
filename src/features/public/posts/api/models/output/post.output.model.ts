@@ -1,4 +1,4 @@
-import { LikeStatus } from '../../../../../types';
+import { LikeStatus } from '../../../../../../infrastructure/helpres/types';
 
 export type NewestLikesViewModel = {
   addedAt: string;

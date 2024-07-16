@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import jwt, { Secret } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import { TokenPayloadType } from '../types';
+import { TokenPayloadType } from '../../infrastructure/helpres/types';
 
 @Injectable()
 export class PasswordAdapter {

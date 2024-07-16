@@ -1,4 +1,7 @@
-import { CommentatorInfoType, LikeStatus } from '../../../../../types';
+import {
+  CommentatorInfoType,
+  LikeStatus,
+} from '../../../../../../infrastructure/helpres/types';
 
 export type LikesInfoType = {
   likesCount: number;

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CommentLikeViewDbType, LikeStatus } from '../../../types';
+import {
+  CommentLikeViewDbType,
+  LikeStatus,
+} from '../../../../infrastructure/helpres/types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CommentLikeEntity } from '../domain/commentLike.entity';

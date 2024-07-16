@@ -1,6 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentLikeRepository } from '../../infrastructure/commentLike.repository';
-import { CommentLikeDbType, CommentLikeViewDbType } from '../../../../types';
+import {
+  CommentLikeDbType,
+  CommentLikeViewDbType,
+} from '../../../../../infrastructure/helpres/types';
 
 export class GetCommentLikeCommand {
   constructor(

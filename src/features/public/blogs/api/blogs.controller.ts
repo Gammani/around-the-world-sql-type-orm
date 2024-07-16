@@ -17,7 +17,7 @@ import { GetAllQueryBlogsCommand } from '../application/use-cases/getAllQueryBlo
 import { GetQueryPostsCommand } from '../../posts/application/use-cases/getQueryPostsUseCase';
 import { GetQueryBlogByIdCommand } from '../application/use-cases/getQueryBlogById.useCase';
 import { Request } from 'express';
-import { PostViewDbType } from '../../../types';
+import { PostViewDbType } from '../../../../infrastructure/helpres/types';
 import { GetPostIdByIdCommand } from '../../posts/application/use-cases/getPostIdByIdUseCase';
 import { GetQueryPostByIdCommand } from '../../posts/application/use-cases/getQueryPostById.useCase';
 

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
-import { BlogViewDbType } from '../../../../types';
+import { BlogViewDbType } from '../../../../../infrastructure/helpres/types';
 
 export class GetBlogByIdCommand {
   constructor(public blogId: string) {}

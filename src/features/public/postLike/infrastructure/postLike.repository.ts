@@ -3,7 +3,7 @@ import {
   CreatedPostLikeDtoType,
   LikeStatus,
   PostLikeViewDbType,
-} from '../../../types';
+} from '../../../../infrastructure/helpres/types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PostLikeEntity } from '../domain/postLike.entity';
