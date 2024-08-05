@@ -12,6 +12,7 @@ import { DeviceEntity } from '../../../public/devices/domain/devices.entity';
 import { PostLikeEntity } from '../../../public/postLike/domain/postLike.entity';
 import { CommentEntity } from '../../../public/comments/domain/comments.entity';
 import { CommentLikeEntity } from '../../../public/commentLike/domain/commentLike.entity';
+import { PlayerEntity } from '../../quiz-game/domain/player.entity';
 
 @Entity({ name: 'userAccountData' })
 export class UserAccountDataEntity extends BaseEntity {
@@ -44,18 +45,21 @@ export class UserAccountDataEntity extends BaseEntity {
   })
   expirationDatePasswordRecovery: Date;
 
-  @OneToOne(() => UserEmailDataEntity, (u) => u.user, {})
+  @OneToOne(() => UserEmailDataEntity, (u) => u.user)
   userEmailData: UserEmailDataEntity;
 
-  @OneToMany(() => DeviceEntity, (u) => u.userId, {})
+  @OneToMany(() => DeviceEntity, (u) => u.user)
   device: DeviceEntity;
 
-  @OneToMany(() => CommentEntity, (com) => com.userId, {})
+  @OneToMany(() => CommentEntity, (com) => com.user)
   comment: CommentEntity;
 
-  @OneToMany(() => PostLikeEntity, (like) => like.userId, {})
+  @OneToMany(() => PostLikeEntity, (like) => like.user)
   postLikes: PostLikeEntity;
 
-  @OneToMany(() => CommentLikeEntity, (like) => like.userId, {})
+  @OneToMany(() => CommentLikeEntity, (like) => like.user)
   commentLike: CommentLikeEntity;
+
+  @OneToMany(() => PlayerEntity, () => PlayerEntity)
+  player: PlayerEntity;
 }

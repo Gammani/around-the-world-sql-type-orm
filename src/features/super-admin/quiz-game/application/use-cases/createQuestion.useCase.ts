@@ -1,7 +1,7 @@
 import { QuestionInputModel } from '../../api/model/input/quiz.input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizRepository } from '../../infrastructure/quiz.repository';
-import { QuizQuestionEntity } from '../../domain/question.entity';
+import { QuizQuestionEntity } from '../../domain/questions.entity';
 
 export class CreateQuestionCommand {
   constructor(public inputQuestionModel: QuestionInputModel) {}

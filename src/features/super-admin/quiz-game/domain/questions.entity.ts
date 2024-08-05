@@ -3,10 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { GameQuestionsEntity } from './game.questions.entity';
 
-@Entity({ name: 'quiz-question' })
+@Entity({ name: 'quiz-questions' })
 export class QuizQuestionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -33,4 +36,6 @@ export class QuizQuestionEntity extends BaseEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+  @OneToMany(() => GameQuestionsEntity, () => GameQuestionsEntity)
+  gameQuestion: GameQuestionsEntity;
 }

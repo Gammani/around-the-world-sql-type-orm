@@ -1,15 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuizQuestionEntity } from '../domain/question.entity';
+import { QuizQuestionEntity } from '../domain/questions.entity';
 import { Repository } from 'typeorm';
 import { validate as validateUUID } from 'uuid';
 import { QuestionInputModel } from '../api/model/input/quiz.input.model';
+import { GameQuestionsEntity } from '../domain/game.questions.entity';
+import { PlayerEntity } from '../domain/player.entity';
+import { GameEntity } from '../domain/game.entity';
+import { GameStatus } from '../../../../infrastructure/helpres/types';
+import { AnswersEntity } from '../domain/answers.entity';
 
 @Injectable()
 export class QuizRepository {
   constructor(
     @InjectRepository(QuizQuestionEntity)
     private quizQuestionRepo: Repository<QuizQuestionEntity>,
+    @InjectRepository(GameQuestionsEntity)
+    private gameQuestionRepo: Repository<GameQuestionsEntity>,
+    @InjectRepository(GameEntity)
+    private gameRepo: Repository<GameEntity>,
+    @InjectRepository(PlayerEntity)
+    private playerRepo: Repository<PlayerEntity>,
+    @InjectRepository(AnswersEntity)
+    private answersRepo: Repository<AnswersEntity>,
   ) {}
 
   async foundQuestionIdById(questionId: string): Promise<string | null> {
@@ -28,9 +41,15 @@ export class QuizRepository {
     }
   }
 
-  async save(entity: QuizQuestionEntity): Promise<string> {
-    const result = await entity.save();
-    return result.id;
+  async getPrepareQuestions(gameId: string) {
+    const foundQuestions = await this.gameQuestionRepo
+      .createQueryBuilder('q')
+      .leftJoinAndSelect('q.question', 'question')
+      .where('q.gameId = :gameId', { gameId })
+      .orderBy('q.index', 'ASC')
+      .getMany();
+
+    return foundQuestions;
   }
 
   async updateQuestion(
@@ -47,6 +66,18 @@ export class QuizRepository {
       .where('id = :questionId', { questionId })
       .execute();
     return result.affected === 1;
+  }
+
+  async findPlayerIdByUserId(userId: string): Promise<string | null> {
+    const foundPlayer = await this.playerRepo
+      .createQueryBuilder('player')
+      .where('player.userId = :userId', { userId })
+      .getOne();
+    if (foundPlayer) {
+      return foundPlayer.id;
+    } else {
+      return null;
+    }
   }
 
   async updatePublishedQuestion(
@@ -70,5 +101,79 @@ export class QuizRepository {
       id: questionId,
     });
     return result.affected === 1;
+  }
+
+  async getRandomQuestions(limitQuestions: number) {
+    const result = await this.quizQuestionRepo
+      .createQueryBuilder('q')
+      .select('q')
+      .where(`q.published = true`)
+      .orderBy(`RANDOM()`)
+      .limit(limitQuestions)
+      .getMany();
+
+    return result;
+  }
+
+  async foundUserIdByPlayerIdInActiveGame(
+    playerId: string,
+  ): Promise<string | null | any> {
+    const foundUserId = await this.playerRepo
+      .createQueryBuilder('player')
+      .leftJoinAndSelect('player.gameAsFirstPlayer', 'game1')
+      .leftJoinAndSelect('player.gameAsSecondPlayer', 'game2')
+      .where(
+        '(game1.status = :activeStatus AND player.userId = :playerId) OR (game2.status = :activeStatus AND player.userId = :playerId) OR (game1.status = :pendingStatus AND player.userId = :playerId) OR (game2.status = :pendingStatus AND player.userId = :playerId)',
+        {
+          activeStatus: GameStatus.Active,
+          pendingStatus: GameStatus.PendingSecondPlayer,
+          playerId: playerId,
+        },
+      )
+      .getMany();
+    return foundUserId;
+  }
+
+  async foundGameWhereSecondUserNull(): Promise<string | null> {
+    const foundGame = await this.gameRepo
+      .createQueryBuilder('g')
+      .where(`g.status = :status`, {
+        status: 'PendingSecondPlayer',
+      })
+      .getOne();
+    if (foundGame) {
+      return foundGame.id;
+    } else {
+      return null;
+    }
+  }
+
+  async updateStatusGame(playerId: string, gameId: string) {
+    const result = await this.gameRepo
+      .createQueryBuilder()
+      .update()
+      .set({ secondPlayerId: playerId, status: GameStatus.Active })
+      .where('id = :gameId', { gameId })
+      .execute();
+    return result.affected === 1;
+  }
+
+  async save(
+    entity:
+      | QuizQuestionEntity
+      | GameQuestionsEntity
+      | PlayerEntity
+      | GameEntity,
+  ): Promise<string> {
+    const result = await entity.save();
+    return result.id;
+  }
+
+  async deleteAll() {
+    await this.answersRepo.delete({});
+    await this.gameQuestionRepo.delete({});
+    await this.quizQuestionRepo.delete({});
+    await this.gameRepo.delete({});
+    await this.playerRepo.delete({});
   }
 }

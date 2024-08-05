@@ -14,6 +14,7 @@ import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
 import { SecurityDeviceModule } from '../devices/sequrity.device.module';
 import { BlogSuperAdminModule } from '../../super-admin/blogs/blogSuperAdminModule';
 import { CommentModule } from '../comments/comment.module';
+import { QuizGameModule } from '../../super-admin/quiz-game/quizGame.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CommentModule } from '../comments/comment.module';
     SecurityDeviceModule,
     BlogSuperAdminModule,
     CommentModule,
+    QuizGameModule,
   ],
   controllers: [TestingRemoveAll],
   providers: [

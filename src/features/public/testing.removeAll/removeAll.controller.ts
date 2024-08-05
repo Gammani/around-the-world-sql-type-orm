@@ -7,6 +7,7 @@ import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
+import { QuizRepository } from '../../super-admin/quiz-game/infrastructure/quiz.repository';
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {
@@ -19,11 +20,13 @@ export class TestingRemoveAll {
     private readonly postLikeRepository: PostLikeRepository,
     private readonly commentLikeRepository: CommentLikeRepository,
     private readonly expiredTokenRepository: ExpiredTokenRepository,
+    private readonly quizQuestionRepo: QuizRepository,
   ) {}
 
   @HttpCode(204)
   @Delete()
   async removeAllData() {
+    await this.quizQuestionRepo.deleteAll();
     await this.commentLikeRepository.deleteAll();
     await this.commentsRepository.deleteAll();
     await this.postLikeRepository.deleteAll();

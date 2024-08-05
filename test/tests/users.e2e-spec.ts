@@ -7,7 +7,8 @@ describe('users', () => {
   //let blogs = []
 
   beforeAll(async () => {
-    app = await getAppAndCleanDB();
+    const data = await getAppAndCleanDB();
+    app = data.app;
   });
 
   it('Create [POST /users]', () => {

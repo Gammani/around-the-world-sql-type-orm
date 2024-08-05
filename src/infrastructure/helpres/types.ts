@@ -272,3 +272,14 @@ export type sortedOptionsType = {
   sortDirection: 'ASC' | 'DESC';
   offset: number;
 };
+
+export enum GameStatus {
+  PendingSecondPlayer = 'PendingSecondPlayer',
+  Active = 'Active',
+  Finished = 'Finished',
+}
+
+export enum AnswerStatus {
+  Correct = 'Correct',
+  Incorrect = 'Incorrect',
+}

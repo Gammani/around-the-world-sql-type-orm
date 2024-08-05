@@ -25,6 +25,10 @@ const useCases = [AddExpiredRefreshTokenUseCase];
     ExpiredTokenEntity,
     ...useCases,
   ],
-  exports: [TypeOrmModule.forFeature([ExpiredTokenEntity]), ExpiredTokenEntity],
+  exports: [
+    TypeOrmModule.forFeature([ExpiredTokenEntity]),
+    ExpiredTokenEntity,
+    ExpiredTokenRepository,
+  ],
 })
 export class ExpiredTokenModule {}

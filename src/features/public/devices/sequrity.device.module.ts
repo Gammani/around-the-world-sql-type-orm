@@ -55,6 +55,10 @@ const useCases = [
     DeviceEntity,
     ...useCases,
   ],
-  exports: [TypeOrmModule.forFeature([DeviceEntity]), DeviceEntity],
+  exports: [
+    TypeOrmModule.forFeature([DeviceEntity]),
+    DeviceEntity,
+    DeviceRepository,
+  ],
 })
 export class SecurityDeviceModule {}

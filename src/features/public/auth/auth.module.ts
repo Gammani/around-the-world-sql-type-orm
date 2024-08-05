@@ -25,9 +25,6 @@ import { IsValidPasswordRecoveryCodeConstraint } from '../../../infrastructure/d
 import { RegistrationResendCodeUseCase } from './application/use-cases/registrationResendCode.useCase';
 import { AddExpiredRefreshTokenUseCase } from './application/use-cases/addExpiredRefreshTokenUseCase';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserAccountDataEntity } from '../../super-admin/users/domain/userAccountData.entity';
-import { UserEmailDataEntity } from '../../super-admin/users/domain/userEmailData.entity';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
 import { ExpiredTokenModule } from '../expiredToken/expired.token.module';
@@ -89,5 +86,6 @@ const decorators = [
     ...decorators,
     ...useCases,
   ],
+  exports: [JwtService, PasswordAdapter],
 })
 export class AuthModule {}

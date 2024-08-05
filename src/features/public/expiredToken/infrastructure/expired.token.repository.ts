@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
 import { DataSource, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { v1 as uuidv1 } from 'uuid';
 import { ExpiredTokenEntity } from '../domain/expired-token.entity';
 
 @Injectable()

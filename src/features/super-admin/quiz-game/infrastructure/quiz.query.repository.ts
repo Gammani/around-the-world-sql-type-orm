@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuizQuestionEntity } from '../domain/question.entity';
+import { QuizQuestionEntity } from '../domain/questions.entity';
 import { Repository } from 'typeorm';
 import {
+  GameViewModel,
   QuestionsWithPaginationViewModel,
   QuestionViewModel,
 } from '../api/model/output/quiz.output.model';
@@ -10,12 +11,27 @@ import { sortedParamOptions } from '../../../../infrastructure/helpres/helpers';
 import { PublishedStatusType } from '../api/model/input/quiz.input.model';
 import { PaginationViewModel } from '../../../../infrastructure/helpres/pagination.view.mapper';
 import { validate as validateUUID } from 'uuid';
+import { GameEntity } from '../domain/game.entity';
+import { GameQuestionsEntity } from '../domain/game.questions.entity';
+import { GameStatus } from '../../../../infrastructure/helpres/types';
+import { PlayerEntity } from '../domain/player.entity';
+import { AnswersEntity } from '../domain/answers.entity';
 
 @Injectable()
 export class QuizQueryRepository {
   constructor(
     @InjectRepository(QuizQuestionEntity)
     private quizQuestionsRepo: Repository<QuizQuestionEntity>,
+    @InjectRepository(QuizQuestionEntity)
+    private quizQuestionRepo: Repository<QuizQuestionEntity>,
+    @InjectRepository(GameQuestionsEntity)
+    private gameQuestionRepo: Repository<GameQuestionsEntity>,
+    @InjectRepository(GameEntity)
+    private gameRepo: Repository<GameEntity>,
+    @InjectRepository(PlayerEntity)
+    private playerRepo: Repository<PlayerEntity>,
+    @InjectRepository(AnswersEntity)
+    private answersRepo: Repository<AnswersEntity>,
   ) {}
 
   async findAllQuestions(
@@ -130,5 +146,63 @@ export class QuizQueryRepository {
         updatedAt: i.q_updatedAt.toISOString(),
       };
     });
+  }
+
+  async getGameViewModelByPlayerId(
+    playerId: string,
+  ): Promise<GameViewModel | any> {
+    //находим игру с игроками и вопросами
+    const foundGame = await this.gameRepo
+      .createQueryBuilder('game')
+      .where(
+        '(game.firstPlayerId = :playerId AND game.status = :activeStatus) OR (game.secondPlayerId = :playerId AND game.status = :activeStatus) OR (game.firstPlayerId = :playerId AND game.status = :pendingStatus) OR (game.secondPlayerId = :playerId AND game.status = :pendingStatus)',
+        {
+          playerId,
+          activeStatus: GameStatus.Active,
+          pendingStatus: GameStatus.PendingSecondPlayer,
+        },
+      )
+      .leftJoinAndSelect('game.questions', 'questions')
+      .leftJoinAndSelect('game.player_1', 'player1')
+      .leftJoinAndSelect('game.player_2', 'player2')
+      .getOne();
+    // находим ответы игроков и самих игроков
+    const player1 = await this.playerRepo
+      .createQueryBuilder('player')
+      .where('player.id = :id', { id: foundGame?.firstPlayerId })
+      .leftJoinAndSelect('player.answers', 'answers')
+      .leftJoinAndSelect('player.user', 'user')
+      .getOne();
+
+    const player2 = await this.playerRepo
+      .createQueryBuilder('player')
+      .where('player.id = :id', { id: foundGame?.secondPlayerId })
+      .leftJoinAndSelect('player.answers', 'answers')
+      .leftJoinAndSelect('player.user', 'user')
+      .getOne();
+    return {
+      id: foundGame && foundGame.id,
+      firstPlayerProgress: {
+        answers: player1 ? player1.answers : [],
+        player: {
+          id: player1 ? player1.userId : null,
+          login: player1 ? player1.user.login : null,
+        },
+        score: player1 ? player1.score : 0,
+      },
+      secondPlayerProgress: {
+        answers: player2 ? player2.answers : [],
+        player: {
+          id: player2 ? player2.userId : null,
+          login: player2 ? player2.user.login : null,
+        },
+        score: player2 ? player2.score : 0,
+      },
+      questions: foundGame && foundGame.questions,
+      status: foundGame && foundGame.status,
+      pairCreatedDate: '123',
+      startGameDate: '123',
+      finishGameDate: '123',
+    };
   }
 }
