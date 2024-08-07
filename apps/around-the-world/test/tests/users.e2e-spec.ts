@@ -18,14 +18,14 @@ describe('users', () => {
       .send({
         login: 'test',
         password: 'string',
-        email: 'test@test.ok',
+        email: '1@1.ok',
       })
       .expect(201)
       .then(({ body }) => {
         expect(body).toEqual({
           id: expect.any(String),
           login: 'test',
-          email: 'test@test.ok',
+          email: '1@1.ok',
           createdAt: expect.any(String),
         });
       });

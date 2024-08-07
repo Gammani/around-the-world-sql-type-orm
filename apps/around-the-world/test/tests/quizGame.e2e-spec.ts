@@ -4,7 +4,7 @@ import { SuperAgentTest } from 'supertest';
 import { createAndLoginUsers } from '../functions/createAndLoginUsers';
 import { createAndActiveQuestions } from '../functions/createAndActiveQuestions';
 
-describe('test quiz game', () => {
+describe('1 quiz game', () => {
   let app: INestApplication;
   let agent: SuperAgentTest;
   let tokens: string[];
