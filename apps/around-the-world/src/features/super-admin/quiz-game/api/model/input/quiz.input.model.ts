@@ -24,7 +24,7 @@ export class QuestionInputModel {
 
   @ApiProperty({
     description: 'array correct answers',
-    example: [String],
+    example: ['string'],
   })
   @IsArray()
   @ArrayNotEmpty()
