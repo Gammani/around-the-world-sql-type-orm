@@ -14,14 +14,15 @@ export class ConnectionGameUseCase
   implements ICommandHandler<ConnectionGameCommand>
 {
   constructor(private quizRepo: QuizRepository) {}
-  async execute(command: ConnectionGameCommand) {
+  async execute(command: ConnectionGameCommand): Promise<string | null> {
     // проверяем юзера на наличие активных/ожидающих игр
-    const foundUser = await this.quizRepo.foundUserIdByPlayerIdInActiveGame(
-      command.userId,
-    );
-
-    if (foundUser.length > 0) {
-      return 'hello';
+    const foundPlayerId =
+      await this.quizRepo.foundPlayerIdByPlayerIdInActiveOrPendingGame(
+        command.userId,
+      );
+    console.log(foundPlayerId);
+    if (foundPlayerId) {
+      return null;
     } else {
       // проверяем, есть ли игра в стадии pending
       const foundGame: string | null =
@@ -59,11 +60,11 @@ export class ConnectionGameUseCase
   private async prepareQuestions(gameId: string, limitQuestion: number) {
     const rawQuestions = await this.quizRepo.getRandomQuestions(limitQuestion);
 
-    for (let i = 0; i <= limitQuestion - 1; i++) {
+    for (let i = 1; i <= limitQuestion; i++) {
       const gameQuestion = new GameQuestionsEntity();
       gameQuestion.gameId = gameId;
       gameQuestion.index = i;
-      gameQuestion.questionId = rawQuestions[i].id;
+      gameQuestion.questionId = rawQuestions[i - 1].id;
 
       await this.quizRepo.save(gameQuestion);
     }

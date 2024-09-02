@@ -205,4 +205,54 @@ export class QuizQueryRepository {
       finishGameDate: '123',
     };
   }
+
+  async getGameViewModelByGameId(gameId: string): Promise<GameViewModel | any> {
+    const foundGame = await this.gameRepo
+      .createQueryBuilder('game')
+      .where({
+        id: gameId,
+      })
+      .leftJoinAndSelect('game.questions', 'questions')
+      .leftJoinAndSelect('game.player_1', 'player1')
+      .leftJoinAndSelect('game.player_2', 'player2')
+      .getOne();
+
+    const player1 = await this.playerRepo
+      .createQueryBuilder('player')
+      .where('player.id = :id', { id: foundGame?.firstPlayerId })
+      .leftJoinAndSelect('player.answers', 'answers')
+      .leftJoinAndSelect('player.user', 'user')
+      .getOne();
+
+    const player2 = await this.playerRepo
+      .createQueryBuilder('player')
+      .where('player.id = :id', { id: foundGame?.secondPlayerId })
+      .leftJoinAndSelect('player.answers', 'answers')
+      .leftJoinAndSelect('player.user', 'user')
+      .getOne();
+    return {
+      id: foundGame && foundGame.id,
+      firstPlayerProgress: {
+        answers: player1 ? player1.answers : [],
+        player: {
+          id: player1 ? player1.userId : null,
+          login: player1 ? player1.user.login : null,
+        },
+        score: player1 ? player1.score : 0,
+      },
+      secondPlayerProgress: {
+        answers: player2 ? player2.answers : [],
+        player: {
+          id: player2 ? player2.userId : null,
+          login: player2 ? player2.user.login : null,
+        },
+        score: player2 ? player2.score : 0,
+      },
+      questions: foundGame && foundGame.questions,
+      status: foundGame && foundGame.status,
+      pairCreatedDate: '123',
+      startGameDate: '123',
+      finishGameDate: '123',
+    };
+  }
 }

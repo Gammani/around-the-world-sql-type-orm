@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   ForbiddenException,
   Get,
@@ -11,14 +12,13 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { QuizQueryRepository } from '../../../super-admin/quiz-game/infrastructure/quiz.query.repository';
 import { Request } from 'express';
-import {
-  RequestWithDeviceId,
-  RequestWithUserId,
-} from '../../auth/api/models/input/auth.input.model';
+import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.model';
 import { ConnectionGameCommand } from '../application/use-cases/connectionGame.useCase';
 import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceId.useCase';
 import { GetPlayerIdByUserIdCommand } from '../../../super-admin/quiz-game/application/use-cases/getPlayerIdByUserId.useCase';
+import { AddAnswerCommand } from '../application/use-cases/addAnswer.useCase';
+import { GetActivePlayerIdCommand } from '../application/use-cases/getActivePlayerId.useCase';
 
 @UseGuards(CheckAccessToken)
 @Controller('pair-game-quiz/pairs')
@@ -49,11 +49,10 @@ export class QuizController {
     }
   }
 
-  @Get('pairs/:id')
-  async findGameById(
-    @Param('id') gameId: string,
-    @Req() req: Request & RequestWithUserId,
-  ) {}
+  @Get(':id')
+  async findGameById(@Param('id') gameId: string) {
+    return await this.quizQueryRepo.getGameViewModelByGameId(gameId);
+  }
 
   @Post('connection')
   async Connection(@Req() req: Request & RequestWithDeviceId) {
@@ -61,10 +60,38 @@ export class QuizController {
       new GetUserIdByDeviceIdCommand(req.deviceId),
     );
     if (foundUserId) {
-      const playerId = await this.commandBus.execute(
+      const playerId: string | null = await this.commandBus.execute(
         new ConnectionGameCommand(foundUserId),
       );
-      return await this.quizQueryRepo.getGameViewModelByPlayerId(playerId);
+      if (playerId) {
+        return await this.quizQueryRepo.getGameViewModelByPlayerId(playerId);
+      } else {
+        throw new ForbiddenException();
+      }
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
+  @Post('my-current/answers')
+  async sendAnswerFromUser(
+    @Req() req: Request & RequestWithDeviceId,
+    @Body() answer: string,
+  ) {
+    const foundUserId = await this.commandBus.execute(
+      new GetUserIdByDeviceIdCommand(req.deviceId),
+    );
+    if (foundUserId) {
+      const playerId = await this.commandBus.execute(
+        new GetActivePlayerIdCommand(foundUserId),
+      );
+      if (playerId) {
+        return await this.commandBus.execute(
+          new AddAnswerCommand(playerId, answer),
+        );
+      } else {
+        throw new ForbiddenException();
+      }
     } else {
       throw new ForbiddenException();
     }

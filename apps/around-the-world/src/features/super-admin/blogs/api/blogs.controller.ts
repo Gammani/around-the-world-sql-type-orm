@@ -46,6 +46,16 @@ import { BlogWithPaginationViewModel } from '../../../public/blogs/api/models/ou
 import { GetAllQueryBlogsCommand } from '../../../public/blogs/application/use-cases/getAllQueryBlogs.useCase';
 import { Request } from 'express';
 import { GetQueryPostByIdCommand } from '../../../public/posts/application/use-cases/getQueryPostById.useCase';
+import { SwaggerGetAllBlogsByAdminEndpoint } from '../../../../swagger/blogs/sa/getAllBlogsByAdmin';
+import { SwaggerFindBlogByIdByAdminEndpoint } from '../../../../swagger/blogs/sa/findBlogByIdByAdmin';
+import { SwaggerGetPostsByBlogIdByAdminEndpoint } from '../../../../swagger/blogs/sa/getPostsByBlogIdByAdmin';
+import { SwaggerCreateBlogByAdminEndpoint } from '../../../../swagger/blogs/sa/createBlogByAdmin';
+import { SwaggerCreatePostByAdminEndpoint } from '../../../../swagger/blogs/sa/createPostByBlogIdByAdmin';
+import { SwaggerUpdateBlogByAdminEndpoint } from '../../../../swagger/blogs/sa/updateBlogByAdmin';
+import { SwaggerUpdatePostByAdminEndpoint } from '../../../../swagger/blogs/sa/updatePostByAdmin';
+import { SwaggerRemoveBlogByAdminEndpoint } from '../../../../swagger/blogs/sa/removeBlogByAdmin';
+import { SwaggerRemovePostByAdminEndpoint } from '../../../../swagger/blogs/sa/removePostByAdmin';
+import { SwaggerGetPostByIdEndpoint } from '../../../../swagger/blogs/sa/findPostByIdByAdmin';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
@@ -59,6 +69,7 @@ export class BlogsController {
   ) {}
 
   @Get()
+  @SwaggerGetAllBlogsByAdminEndpoint()
   async getAllBlogs(
     @Query()
     query: {
@@ -83,6 +94,7 @@ export class BlogsController {
   }
 
   @UseGuards(BasicAuthGuard)
+  @SwaggerFindBlogByIdByAdminEndpoint()
   @Get(':id')
   async findBlogById(@Param('id') blogId: string) {
     const foundBlog = await this.commandBus.execute(
@@ -97,6 +109,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Get(':blogId/posts')
+  @SwaggerGetPostsByBlogIdByAdminEndpoint()
   async getPostsByBlogId(
     @Param('blogId') blogId: string,
     @Req() req: Request & RequestWithUserId,
@@ -131,6 +144,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Post()
+  @SwaggerCreateBlogByAdminEndpoint()
   async createBlogByAdmin(@Body() inputBlogModel: BlogCreateModel) {
     const blogId = await this.commandBus.execute(
       new CreateBlogByAdminCommand(inputBlogModel),
@@ -140,6 +154,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Post(':blogId/posts')
+  @SwaggerCreatePostByAdminEndpoint()
   async createPostByBlogIdByAdmin(
     @Param('blogId') blogId: string,
     @Body() inputPostModel: PostCreateModel,
@@ -159,6 +174,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Put(':id')
+  @SwaggerUpdateBlogByAdminEndpoint()
   @HttpCode(204)
   async updateBlogByAdmin(
     @Param('id') blogId: string,
@@ -178,6 +194,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Put(':blogId/posts/:id')
+  @SwaggerUpdatePostByAdminEndpoint()
   @HttpCode(204)
   async updatePostByAdmin(
     @Param('id') postId: string,
@@ -205,6 +222,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
+  @SwaggerRemoveBlogByAdminEndpoint()
   @HttpCode(204)
   async removeBlogByAdmin(@Param('id') blogId: string) {
     const foundBlog: BlogViewDbType | null = await this.commandBus.execute(
@@ -219,6 +237,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Delete(':blogId/posts/:id')
+  @SwaggerRemovePostByAdminEndpoint()
   @HttpCode(204)
   async removePostByAdmin(
     @Param('id') postId: string,
@@ -242,6 +261,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts/:id')
+  @SwaggerGetPostByIdEndpoint()
   async findPostById(
     @Param('id') postId: string,
     @Param('blogId') blogId: string,

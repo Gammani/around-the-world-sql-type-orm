@@ -54,3 +54,11 @@ export type GameViewModel = {
   startGameDate: string;
   finishGameDate: string;
 };
+
+export type CreateAnswerDtoType = {
+  id: string;
+  status: boolean;
+  addedAt: Date;
+  index: number;
+  playerId: string;
+};

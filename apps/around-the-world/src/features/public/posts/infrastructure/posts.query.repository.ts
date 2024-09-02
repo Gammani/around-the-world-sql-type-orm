@@ -90,7 +90,7 @@ export class PostsQueryRepository {
                 .limit(3);
             }, 'agg');
         }, 'newestLikes')
-        .leftJoinAndSelect('p.blog', 'blog')
+        .leftJoinAndSelect('p.blogs', 'blog')
         .where('p.blogId = :blogId', { blogId })
         .orderBy(
           `${sortedOptions.sortBy}` === 'blogName'
@@ -148,7 +148,7 @@ export class PostsQueryRepository {
                 .limit(3);
             }, 'agg');
         }, 'newestLikes')
-        .leftJoinAndSelect('p.blog', 'blog')
+        .leftJoinAndSelect('p.blogs', 'blog')
         .orderBy(
           `${sortedOptions.sortBy}` === 'blogName'
             ? `blog.name`
@@ -180,7 +180,6 @@ export class PostsQueryRepository {
         },
         where: { id: postId },
       });
-
       const foundLikes = await this.postLikesRepo.find({
         relations: {
           user: true,
@@ -195,7 +194,6 @@ export class PostsQueryRepository {
           addedAt: 'DESC',
         },
       });
-
       const likes = foundLikes.filter((like) => like.likeStatus === 'Like');
       const dislike = foundLikes.filter(
         (dislike) => dislike.likeStatus === 'Dislike',

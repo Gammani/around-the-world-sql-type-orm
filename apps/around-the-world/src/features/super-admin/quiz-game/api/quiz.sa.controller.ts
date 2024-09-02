@@ -25,6 +25,8 @@ import { UpdateQuestionPublishCommand } from '../application/use-cases/updateQue
 import { FoundQuestionIdCommand } from '../application/use-cases/foundQuestionId.useCase';
 import { UpdateQuestionCommand } from '../application/use-cases/updateQuestion.useCase';
 import { DeleteQuestionIdCommand } from '../application/use-cases/deleteQuestionId.useCase';
+import { SwaggerGetAllQuestionsEndpoint } from '../../../../swagger/quizGame/sa/getAllQuestions';
+import { SwaggerCreateQuestionEndpoint } from '../../../../swagger/quizGame/sa/createQuestion';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -35,6 +37,7 @@ export class QuizSController {
   ) {}
 
   @Get('')
+  @SwaggerGetAllQuestionsEndpoint()
   async getAllQuestions(
     @Query()
     query: {
@@ -60,6 +63,7 @@ export class QuizSController {
   }
 
   @Post('')
+  @SwaggerCreateQuestionEndpoint()
   async createQuestion(@Body() inputQuestionModel: QuestionInputModel) {
     const questionId = await this.commandBus.execute(
       new CreateQuestionCommand(inputQuestionModel),

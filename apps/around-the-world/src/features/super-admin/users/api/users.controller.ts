@@ -22,6 +22,10 @@ import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';
 import { GetUserViewModelByUserIdCommand } from '../application/use-cases/getUserViewModelByUserId.useCase';
 import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 import { GetCreatedUserViewModelCommand } from '../application/use-cases/getCreatedUserViewModelUseCase';
+import { SwaggerGetAllUsersByAdminEndpoint } from '../../../../swagger/users/getAllUsers';
+import { SwaggerFindUserByIdByAdminEndpoint } from '../../../../swagger/users/findUserById';
+import { SwaggerCreateUserByAdminEndpoint } from '../../../../swagger/users/createUserByAdmin';
+import { SwaggerRemoveUserByAdminEndpoint } from '../../../../swagger/users/removeUserByAdmin';
 
 @Controller('sa/users')
 export class UsersController {
@@ -30,7 +34,9 @@ export class UsersController {
     private readonly usersQueryRepository: UsersQueryRepository,
     private commandBus: CommandBus,
   ) {}
+
   @Get()
+  @SwaggerGetAllUsersByAdminEndpoint()
   async getAllUsers(
     @Query()
     query: {
@@ -57,6 +63,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @SwaggerFindUserByIdByAdminEndpoint()
   async findUserById(@Param('id') userId: string) {
     const foundUser = await this.commandBus.execute(
       new GetUserViewModelByUserIdCommand(userId),
@@ -70,6 +77,7 @@ export class UsersController {
 
   @UseGuards(BasicAuthGuard)
   @Post()
+  @SwaggerCreateUserByAdminEndpoint()
   @HttpCode(HttpStatus.CREATED)
   async createUserByAdmin(@Body() inputUserModel: UserCreateModel) {
     const userId = await this.commandBus.execute(
@@ -80,6 +88,7 @@ export class UsersController {
 
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
+  @SwaggerRemoveUserByAdminEndpoint()
   @HttpCode(204)
   async removeUserByAdmin(@Param('id') userId: string) {
     const userRemoved = await this.commandBus.execute(

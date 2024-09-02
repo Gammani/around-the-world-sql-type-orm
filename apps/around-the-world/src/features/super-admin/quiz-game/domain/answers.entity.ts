@@ -24,6 +24,9 @@ export class AnswersEntity extends BaseEntity {
   })
   addedAt: Date;
 
+  @Column({ nullable: false })
+  index: number;
+
   @ManyToOne(() => PlayerEntity, (player) => player.answers)
   @JoinColumn()
   player: PlayerEntity;

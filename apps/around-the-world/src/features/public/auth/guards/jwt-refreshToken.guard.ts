@@ -25,8 +25,6 @@ export class CheckRefreshToken {
 
   async canActivate(context: ExecutionContext): Promise<any> {
     const req = context.switchToHttp().getRequest();
-
-    debugger;
     const cookieRefreshToken = req.cookies.refreshToken;
     if (!cookieRefreshToken) throw new UnauthorizedException();
 

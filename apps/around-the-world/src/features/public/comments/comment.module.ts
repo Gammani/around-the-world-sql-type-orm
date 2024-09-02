@@ -55,6 +55,7 @@ const useCases = [
   ],
   controllers: [CommentsController],
   providers: [
+    ...useCases,
     CommentsService,
     CommentsRepository,
     CommentLikeService,
@@ -69,7 +70,6 @@ const useCases = [
     SecurityDevicesService,
     DeviceRepository,
     ExpiredTokenRepository,
-    ...useCases,
   ],
   exports: [TypeOrmModule.forFeature([CommentEntity, CommentLikeEntity])],
 })

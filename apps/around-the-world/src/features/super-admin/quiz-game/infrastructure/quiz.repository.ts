@@ -52,6 +52,15 @@ export class QuizRepository {
     return foundQuestions;
   }
 
+  async getAllAnswersFromPlayerId(playerId: string) {
+    const foundAnswers = await this.answersRepo
+      .createQueryBuilder('answers')
+      .where('answers.playerId = :playerId', { playerId })
+      .orderBy('answers.index', 'ASC')
+      .getMany();
+    return foundAnswers;
+  }
+
   async updateQuestion(
     questionId: string,
     questionInputModel: QuestionInputModel,
@@ -115,23 +124,46 @@ export class QuizRepository {
     return result;
   }
 
-  async foundUserIdByPlayerIdInActiveGame(
-    playerId: string,
-  ): Promise<string | null | any> {
-    const foundUserId = await this.playerRepo
+  async foundPlayerIdByPlayerIdInActiveOrPendingGame(
+    userId: string,
+  ): Promise<string | null> {
+    const foundPlayer = await this.playerRepo
       .createQueryBuilder('player')
       .leftJoinAndSelect('player.gameAsFirstPlayer', 'game1')
       .leftJoinAndSelect('player.gameAsSecondPlayer', 'game2')
       .where(
-        '(game1.status = :activeStatus AND player.userId = :playerId) OR (game2.status = :activeStatus AND player.userId = :playerId) OR (game1.status = :pendingStatus AND player.userId = :playerId) OR (game2.status = :pendingStatus AND player.userId = :playerId)',
+        '(game1.status = :activeStatus AND player.userId = :userId) OR (game2.status = :activeStatus AND player.userId = :userId) OR (game1.status = :pendingStatus AND player.userId = :userId) OR (game2.status = :pendingStatus AND player.userId = :userId)',
         {
           activeStatus: GameStatus.Active,
           pendingStatus: GameStatus.PendingSecondPlayer,
-          playerId: playerId,
+          userId: userId,
         },
       )
       .getMany();
-    return foundUserId;
+    if (foundPlayer.length > 0) {
+      return foundPlayer[0].id;
+    } else {
+      return null;
+    }
+  }
+  async foundUserIdByPlayerIdInActiveGame(
+    userId: string,
+  ): Promise<string | null> {
+    const foundPlayer = await this.playerRepo
+      .createQueryBuilder('player')
+      .leftJoinAndSelect('player.gameAsFirstPlayer', 'game1')
+      .leftJoinAndSelect('player.gameAsSecondPlayer', 'game2')
+      .where(
+        '(game1.status = :activeStatus AND player.userId = :userId) OR (game2.status = :activeStatus AND player.userId = :userId)',
+        { activeStatus: GameStatus.Active, userId: userId },
+      )
+      .getMany();
+    console.log(foundPlayer);
+    if (foundPlayer.length > 0) {
+      return foundPlayer[0].id;
+    } else {
+      return null;
+    }
   }
 
   async foundGameWhereSecondUserNull(): Promise<string | null> {

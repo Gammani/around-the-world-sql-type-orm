@@ -20,6 +20,10 @@ import { Request } from 'express';
 import { PostViewDbType } from '../../../../infrastructure/helpres/types';
 import { GetPostIdByIdCommand } from '../../posts/application/use-cases/getPostIdByIdUseCase';
 import { GetQueryPostByIdCommand } from '../../posts/application/use-cases/getQueryPostById.useCase';
+import { SwaggerGetAllBlogsEndpoint } from '../../../../swagger/blogs/public/getAllBlogs';
+import { SwaggerFindBlogByIdEndpoint } from '../../../../swagger/blogs/public/findBlogById';
+import { SwaggerGetPostsByBlogIdEndpoint } from '../../../../swagger/blogs/public/getPostsByBlogId';
+import { SwaggerGetPostByIdEndpoint } from '../../../../swagger/blogs/public/findPostById';
 
 @Controller('blogs')
 export class BlogsController {
@@ -30,6 +34,7 @@ export class BlogsController {
   ) {}
 
   @Get()
+  @SwaggerGetAllBlogsEndpoint()
   async getAllBlogs(
     @Query()
     query: {
@@ -54,6 +59,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
+  @SwaggerGetPostsByBlogIdEndpoint()
   async getPostsByBlogId(
     @Param('blogId') blogId: string,
     @Req() req: Request & RequestWithUserId,
@@ -87,6 +93,7 @@ export class BlogsController {
   }
 
   @Get(':id')
+  @SwaggerFindBlogByIdEndpoint()
   async findBlogById(@Param('id') blogId: string) {
     const foundBlog = await this.commandBus.execute(
       new GetQueryBlogByIdCommand(blogId),
@@ -99,6 +106,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts/:id')
+  @SwaggerGetPostByIdEndpoint()
   async findPostById(
     @Param('id') postId: string,
     @Req() req: Request & RequestWithUserId,

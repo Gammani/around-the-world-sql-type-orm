@@ -42,8 +42,18 @@ import { CreateUserCommand } from '../../../super-admin/users/application/use-ca
 import { GetUserViewModelByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserViewModelByDeviceId.useCase';
 import { RegistrationResendCodeCommand } from '../application/use-cases/registrationResendCode.useCase';
 import { AddExpiredRefreshTokenCommand } from '../application/use-cases/addExpiredRefreshTokenUseCase';
+import { SwaggerRegistrationEndpoint } from '../../../../swagger/auth/registration';
+import { SwaggerRegistrationConfirmationEndpoint } from '../../../../swagger/auth/registrationConfirmaion';
+import { SwaggerPasswordRecoveryEndpoint } from '../../../../swagger/auth/passwordRecovery';
+import { SwaggerNewPasswordEndpoint } from '../../../../swagger/auth/newPassword';
+import { SwaggerLoginEndpoint } from '../../../../swagger/auth/login';
+import { SwaggerRefreshTokenEndpoint } from '../../../../swagger/auth/refreshToken';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { SwaggerRegistrationEmailResendingEndpoint } from '../../../../swagger/auth/registrationEmailResending';
+import { SwaggerLogoutEndpoint } from '../../../../swagger/auth/logout';
+import { SwaggerMeEndpoint } from '../../../../swagger/auth/me';
 
-// @UseGuards(ThrottlerGuard)
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -55,18 +65,21 @@ export class AuthController {
   ) {}
 
   @Post('registration')
+  @SwaggerRegistrationEndpoint()
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() createUserModel: UserCreateModel) {
     return this.commandBus.execute(new CreateUserCommand(createUserModel));
   }
 
   @Post('registration-confirmation')
+  @SwaggerRegistrationConfirmationEndpoint()
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body() confirmCodeModel: ConfirmCodeModel) {
     await this.commandBus.execute(new ConfirmEmailCommand(confirmCodeModel));
   }
 
   @Post('password-recovery')
+  @SwaggerPasswordRecoveryEndpoint()
   @HttpCode(204)
   async passwordRecovery(
     @Body() emailPasswordRecoveryInputModel: EmailPasswordRecoveryInputModel,
@@ -77,6 +90,7 @@ export class AuthController {
   }
 
   @Post('new-password')
+  @SwaggerNewPasswordEndpoint()
   @HttpCode(204)
   async newPassword(@Body() newPasswordModel: NewPasswordModel) {
     await this.commandBus.execute(new UpdatePasswordCommand(newPasswordModel));
@@ -84,6 +98,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @SwaggerLoginEndpoint()
   @HttpCode(200)
   async login(
     @Body() authInputModel: AuthInputModel,
@@ -107,6 +122,7 @@ export class AuthController {
 
   @UseGuards(CheckRefreshToken)
   @Post('refresh-token')
+  @SwaggerRefreshTokenEndpoint()
   @HttpCode(200)
   async refreshToken(
     @Req() req: Request & RequestWithDeviceId,
@@ -129,6 +145,7 @@ export class AuthController {
   }
 
   @Post('registration-email-resending')
+  @SwaggerRegistrationEmailResendingEndpoint()
   @HttpCode(204)
   async registrationEmailResending(@Body() emailInputModel: EmailInputModel) {
     await this.commandBus.execute(
@@ -138,6 +155,7 @@ export class AuthController {
 
   @UseGuards(CheckRefreshToken)
   @Post('logout')
+  @SwaggerLogoutEndpoint()
   @HttpCode(204)
   async logout(
     @Req() req: Request & RequestWithDeviceId,
@@ -154,6 +172,7 @@ export class AuthController {
 
   @UseGuards(CheckAccessToken)
   @Get('me')
+  @SwaggerMeEndpoint()
   async me(@Req() req: Request & RequestWithDeviceId) {
     return await this.commandBus.execute(
       new GetUserViewModelByDeviceIdCommand(req.deviceId),

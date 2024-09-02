@@ -21,6 +21,8 @@ import { SecurityDeviceModule } from '../../public/devices/sequrity.device.modul
 import { AnswersEntity } from './domain/answers.entity';
 import { GameEntity } from './domain/game.entity';
 import { GetPlayerIdByUserIdUseCase } from './application/use-cases/getPlayerIdByUserId.useCase';
+import { AddAnswerUseCase } from '../../public/quiz-game/application/use-cases/addAnswer.useCase';
+import { GetActivePlayerIdUseCase } from '../../public/quiz-game/application/use-cases/getActivePlayerId.useCase';
 
 const useCases = [
   CreateQuestionUseCase,
@@ -31,6 +33,8 @@ const useCases = [
   ConnectionGameUseCase,
   GetUserIdByDeviceIdUseCase,
   GetPlayerIdByUserIdUseCase,
+  AddAnswerUseCase,
+  GetActivePlayerIdUseCase,
 ];
 
 @Module({
