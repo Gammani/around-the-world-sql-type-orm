@@ -1,19 +1,18 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
-  ApiBasicAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
-export function SwaggerRemoveUserByAdminEndpoint() {
+export function SwaggerTerminateSessionByIdEndpoint() {
   return applyDecorators(
-    ApiTags('admin/users'),
+    ApiTags('SecurityDevices'),
     ApiOperation({
-      summary: 'Delete user specified by id',
+      summary: 'Terminate specified device session',
     }),
-
-    ApiBasicAuth(),
+    ApiCookieAuth(),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
       description: 'No Content',
@@ -23,8 +22,12 @@ export function SwaggerRemoveUserByAdminEndpoint() {
       description: 'Unauthorized',
     }),
     ApiResponse({
+      status: HttpStatus.FORBIDDEN,
+      description: 'If try to delete the deviceId of other user',
+    }),
+    ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'If specified user is not exists',
+      description: 'Not Found',
     }),
   );
 }

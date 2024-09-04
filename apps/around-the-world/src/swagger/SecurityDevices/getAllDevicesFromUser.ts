@@ -1,25 +1,24 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserInfoDTO } from '../dtoTypes';
+import { DeviceDTO } from '../dtoTypes';
 
-export function SwaggerMeEndpoint() {
+export function SwaggerGetAllDevicesFromUserEndpoint() {
   return applyDecorators(
-    ApiTags('Auth'),
+    ApiTags('SecurityDevices'),
     ApiOperation({
-      summary: 'Get information about current user',
+      summary: 'Return all devices with active sessions for current user',
     }),
-    ApiBearerAuth('JWT-auth'),
+    ApiCookieAuth(),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: UserInfoDTO,
+      type: DeviceDTO,
     }),
-
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
       description: 'Unauthorized',

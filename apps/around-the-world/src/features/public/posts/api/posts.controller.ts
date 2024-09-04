@@ -43,6 +43,11 @@ import {
 } from '../../../../infrastructure/helpres/types';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceIdUseCase';
 import { BlogsService } from '../../../super-admin/blogs/application/blogs.service';
+import { SwaggerUpdatePostLikeStatusEndpoint } from '../../../../swagger/post/updatePostLikeStatus';
+import { SwaggerGetCommentsByPostIdEndpoint } from '../../../../swagger/post/getCommentsByPostId';
+import { SwaggerGetAllPostsEndpoint } from '../../../../swagger/post/getAllPosts';
+import { SwaggerCreateCommentByPostIdEndpoint } from '../../../../swagger/post/createCommentByPostId';
+import { SwaggerFindPostByIdEndpoint } from '../../../../swagger/post/findPostById';
 
 @Controller('posts')
 export class PostsController {
@@ -59,6 +64,7 @@ export class PostsController {
 
   @UseGuards(CheckAccessToken)
   @Put(':postId/like-status')
+  @SwaggerUpdatePostLikeStatusEndpoint()
   @HttpCode(204)
   async updatePostLikeStatus(
     @Body() postLikeModel: PostLikeModel,
@@ -101,6 +107,7 @@ export class PostsController {
   }
 
   @Get(':postId/comments')
+  @SwaggerGetCommentsByPostIdEndpoint()
   async getCommentsByPostId(
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithUserId,
@@ -134,6 +141,7 @@ export class PostsController {
   }
 
   @Get()
+  @SwaggerGetAllPostsEndpoint()
   async getAllPosts(
     @Req() req: Request & RequestWithUserId,
     @Query()
@@ -159,6 +167,7 @@ export class PostsController {
 
   @UseGuards(CheckAccessToken)
   @Post(':postId/comments')
+  @SwaggerCreateCommentByPostIdEndpoint()
   async createCommentByPostId(
     @Body() inputCommentModel: CommentInputModel,
     @Param('postId') postId: string,
@@ -188,6 +197,7 @@ export class PostsController {
   }
 
   @Get(':id')
+  @SwaggerFindPostByIdEndpoint()
   async findPostById(
     @Param('id') postId: string,
     @Req() req: Request & RequestWithUserId,

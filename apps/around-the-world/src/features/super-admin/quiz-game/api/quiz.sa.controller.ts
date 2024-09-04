@@ -27,6 +27,9 @@ import { UpdateQuestionCommand } from '../application/use-cases/updateQuestion.u
 import { DeleteQuestionIdCommand } from '../application/use-cases/deleteQuestionId.useCase';
 import { SwaggerGetAllQuestionsEndpoint } from '../../../../swagger/quizGame/sa/getAllQuestions';
 import { SwaggerCreateQuestionEndpoint } from '../../../../swagger/quizGame/sa/createQuestion';
+import { SwaggerUpdateQuestionEndpoint } from '../../../../swagger/quizGame/sa/updateQuestion';
+import { SwaggerPublishQuestionEndpoint } from '../../../../swagger/quizGame/sa/publishQuestion';
+import { SwaggerDeleteQuestionEndpoint } from '../../../../swagger/quizGame/sa/deleteQuestio';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -72,6 +75,7 @@ export class QuizSController {
   }
 
   @Put(':id')
+  @SwaggerUpdateQuestionEndpoint()
   @HttpCode(204)
   async updateQuestion(
     @Param('id') questionId: string,
@@ -90,6 +94,7 @@ export class QuizSController {
   }
 
   @Put(':id/publish')
+  @SwaggerPublishQuestionEndpoint()
   @HttpCode(204)
   async publishQuestion(
     @Param('id') questionId: string,
@@ -111,6 +116,7 @@ export class QuizSController {
   }
 
   @Delete(':id')
+  @SwaggerDeleteQuestionEndpoint()
   @HttpCode(204)
   async deleteQuestion(@Param('id') questionId: string) {
     const foundQuestionId: string | null = await this.commandBus.execute(

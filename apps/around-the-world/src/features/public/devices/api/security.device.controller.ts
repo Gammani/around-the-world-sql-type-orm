@@ -21,6 +21,9 @@ import { DeleteAllSessionExcludeCurrentCommand } from '../application/use-cases/
 import { UsersService } from '../../../super-admin/users/application/users.service';
 import { UserViewDbModelType } from '../../../../infrastructure/helpres/types';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceId.useCase';
+import { SwaggerGetAllDevicesFromUserEndpoint } from '../../../../swagger/SecurityDevices/getAllDevicesFromUser';
+import { SwaggerTerminateAllExcludeCurrentSessionEndpoint } from '../../../../swagger/SecurityDevices/terminateAllExcludeCurrentSession';
+import { SwaggerTerminateSessionByIdEndpoint } from '../../../../swagger/SecurityDevices/terminateSessionById';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -33,6 +36,7 @@ export class SecurityDeviceController {
   ) {}
 
   @Get()
+  @SwaggerGetAllDevicesFromUserEndpoint()
   async getAllDevicesFromUser(@Req() req: Request & RequestWithDeviceId) {
     const foundUser: UserViewDbModelType | null =
       await this.userService.findUserByDeviceId(req.deviceId);
@@ -43,6 +47,7 @@ export class SecurityDeviceController {
   }
 
   @Delete()
+  @SwaggerTerminateAllExcludeCurrentSessionEndpoint()
   @HttpCode(204)
   async terminateAllExcludeCurrentSession(
     @Req() req: Request & RequestWithDeviceId,
@@ -57,6 +62,7 @@ export class SecurityDeviceController {
   }
 
   @Delete(':deviceId')
+  @SwaggerTerminateSessionByIdEndpoint()
   @HttpCode(204)
   async terminateSessionById(
     @Req() req: Request & RequestWithDeviceId,

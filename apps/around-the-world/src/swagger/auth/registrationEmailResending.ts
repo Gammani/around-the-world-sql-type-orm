@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 export function SwaggerRegistrationEmailResendingEndpoint() {
   return applyDecorators(
-    ApiTags('public/auth'),
+    ApiTags('Auth'),
     ApiOperation({
       summary: 'Resend confirmation registration Email if user exist',
     }),

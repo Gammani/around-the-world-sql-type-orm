@@ -4,14 +4,14 @@ import {
   BlogIdDTO,
   PageNumberDTO,
   PageSizeDTO,
-  PostWithPaginationViewModelDTO,
+  PostViewModelDTO,
   SortByDTO,
   SortDirectionDTO,
 } from '../../dtoTypes';
 
 export function SwaggerGetPostsByBlogIdEndpoint() {
   return applyDecorators(
-    ApiTags('public/blogs'),
+    ApiTags('Blogs'),
     ApiOperation({
       summary: 'Return posts for blog with paging amd sorting',
     }),
@@ -38,7 +38,7 @@ export function SwaggerGetPostsByBlogIdEndpoint() {
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: PostWithPaginationViewModelDTO,
+      type: PostViewModelDTO,
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,

@@ -1,23 +1,19 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  BlogsWithPaginationViewModelDTO,
   PageNumberDTO,
   PageSizeDTO,
-  SearchNameTermDTO,
+  PostIdDTO,
+  PostsWithPaginationViewModelDTO,
   SortByDTO,
   SortDirectionDTO,
-} from '../../dtoTypes';
+} from '../dtoTypes';
 
-export function SwaggerGetAllBlogsEndpoint() {
+export function SwaggerGetAllPostsEndpoint() {
   return applyDecorators(
-    ApiTags('Blogs'),
+    ApiTags('Posts'),
     ApiOperation({
-      summary: 'Return all blogs with paging',
-    }),
-    ApiQuery({
-      name: 'searchNameTerm',
-      type: SearchNameTermDTO,
+      summary: 'Returns all posts',
     }),
     ApiQuery({
       name: 'sortBy',
@@ -35,10 +31,14 @@ export function SwaggerGetAllBlogsEndpoint() {
       name: 'pageSize',
       type: PageSizeDTO,
     }),
+    ApiQuery({
+      name: 'postId',
+      type: PostIdDTO,
+    }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: BlogsWithPaginationViewModelDTO,
+      type: PostsWithPaginationViewModelDTO,
     }),
   );
 }

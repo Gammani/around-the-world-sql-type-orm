@@ -1,17 +1,17 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PostWithPaginationViewModelDTO } from '../../dtoTypes';
+import { PostViewModelDTO } from '../../dtoTypes';
 
 export function SwaggerGetPostByIdEndpoint() {
   return applyDecorators(
-    ApiTags('public/blogs'),
+    ApiTags('Blogs'),
     ApiOperation({
       summary: 'Return post by id for specified blogId ',
     }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: PostWithPaginationViewModelDTO,
+      type: PostViewModelDTO,
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,

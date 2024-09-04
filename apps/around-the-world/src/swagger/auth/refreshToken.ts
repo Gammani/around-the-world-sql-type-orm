@@ -8,7 +8,7 @@ import {
 
 export function SwaggerRefreshTokenEndpoint() {
   return applyDecorators(
-    ApiTags('public/auth'),
+    ApiTags('Auth'),
     ApiOperation({
       summary:
         'Generate new pair of access and refresh tokens (in cookie client must send correct refreshToken that will be revoked after refreshing)' +

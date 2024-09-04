@@ -19,6 +19,7 @@ export function SwaggerFindUserByIdByAdminEndpoint() {
       description: 'Success',
       type: UserDTO,
     }),
+
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
       description: 'Unauthorized',

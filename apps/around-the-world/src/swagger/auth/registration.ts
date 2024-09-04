@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 export function SwaggerRegistrationEndpoint() {
   return applyDecorators(
-    ApiTags('public/auth'),
+    ApiTags('Auth'),
     ApiOperation({
       summary:
         'Registration in the system. Email with confirmation code will be send to passed email address',

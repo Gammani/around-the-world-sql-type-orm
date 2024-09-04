@@ -35,6 +35,10 @@ import { UsersService } from '../../../super-admin/users/application/users.servi
 import { CommentViewModelType } from '../../../../infrastructure/helpres/types';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceIdUseCase';
 import { GetCommentIdByIdCommand } from '../application/use-cases/getCommentIdByIdUseCase';
+import { SwaggerGetCommentByIdEndpoint } from '../../../../swagger/comments/getCommentById';
+import { SwaggerUpdateCommentByIdEndpoint } from '../../../../swagger/comments/updateCommentById';
+import { SwaggerRemoveCommentByIdEndpoint } from '../../../../swagger/comments/removeCommentById';
+import { SwaggerUpdateCommentLikeStatusEndpoint } from '../../../../swagger/comments/updateCommentLikeStatus';
 
 @Controller('comments')
 export class CommentsController {
@@ -47,6 +51,7 @@ export class CommentsController {
   ) {}
 
   @Get(':id')
+  @SwaggerGetCommentByIdEndpoint()
   async getCommentById(
     @Param('id') commentId: string,
     @Req() req: Request & RequestWithUserId,
@@ -64,6 +69,7 @@ export class CommentsController {
 
   @UseGuards(CheckAccessToken)
   @Put(':commentId')
+  @SwaggerUpdateCommentByIdEndpoint()
   @HttpCode(204)
   async updateCommentById(
     @Body() inputCommentModel: CommentInputModel,
@@ -96,6 +102,7 @@ export class CommentsController {
 
   @UseGuards(CheckAccessToken)
   @Delete(':commentId')
+  @SwaggerRemoveCommentByIdEndpoint()
   @HttpCode(204)
   async removeCommentById(
     @Param('commentId') commentId: string,
@@ -124,6 +131,7 @@ export class CommentsController {
 
   @UseGuards(CheckAccessToken)
   @Put(':commentId/like-status')
+  @SwaggerUpdateCommentLikeStatusEndpoint()
   @HttpCode(204)
   async updateCommentLikeStatus(
     @Body() commentLikeModel: CommentLikeModel,

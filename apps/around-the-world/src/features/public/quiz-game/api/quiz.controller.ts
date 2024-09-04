@@ -19,6 +19,10 @@ import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/applicati
 import { GetPlayerIdByUserIdCommand } from '../../../super-admin/quiz-game/application/use-cases/getPlayerIdByUserId.useCase';
 import { AddAnswerCommand } from '../application/use-cases/addAnswer.useCase';
 import { GetActivePlayerIdCommand } from '../application/use-cases/getActivePlayerId.useCase';
+import { SwaggerReturnCurrentUnfinishedGameEndpoint } from '../../../../swagger/quizGame/public/returnCurrentUnfinishedGame';
+import { SwaggerFindGameByIdEndpoint } from '../../../../swagger/quizGame/public/findGameById';
+import { SwaggerConnectionEndpoint } from '../../../../swagger/quizGame/public/connection';
+import { SwaggerSendAnswerFromUserEndpoint } from '../../../../swagger/quizGame/public/sendAnswerFromUser';
 
 @UseGuards(CheckAccessToken)
 @Controller('pair-game-quiz/pairs')
@@ -29,6 +33,7 @@ export class QuizController {
   ) {}
 
   @Get('my-current')
+  @SwaggerReturnCurrentUnfinishedGameEndpoint()
   async returnCurrentUnfinishedGame(@Req() req: Request & RequestWithDeviceId) {
     const userId = await this.commandBus.execute(
       new GetUserIdByDeviceIdCommand(req.deviceId),
@@ -50,11 +55,13 @@ export class QuizController {
   }
 
   @Get(':id')
+  @SwaggerFindGameByIdEndpoint()
   async findGameById(@Param('id') gameId: string) {
     return await this.quizQueryRepo.getGameViewModelByGameId(gameId);
   }
 
   @Post('connection')
+  @SwaggerConnectionEndpoint()
   async Connection(@Req() req: Request & RequestWithDeviceId) {
     const foundUserId = await this.commandBus.execute(
       new GetUserIdByDeviceIdCommand(req.deviceId),
@@ -74,6 +81,7 @@ export class QuizController {
   }
 
   @Post('my-current/answers')
+  @SwaggerSendAnswerFromUserEndpoint()
   async sendAnswerFromUser(
     @Req() req: Request & RequestWithDeviceId,
     @Body() answer: string,

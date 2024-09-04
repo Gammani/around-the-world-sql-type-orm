@@ -8,7 +8,7 @@ import {
 
 export function SwaggerLogoutEndpoint() {
   return applyDecorators(
-    ApiTags('public/auth'),
+    ApiTags('Auth'),
     ApiOperation({
       summary:
         'In cookie client must send correct refreshToken that will be revoked',

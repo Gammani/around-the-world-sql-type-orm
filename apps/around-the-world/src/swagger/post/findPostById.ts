@@ -1,17 +1,21 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BlogDTO } from '../../dtoTypes';
+import { PostDTO } from '../dtoTypes';
 
-export function SwaggerFindBlogByIdEndpoint() {
+export function SwaggerFindPostByIdEndpoint() {
   return applyDecorators(
-    ApiTags('Blogs'),
+    ApiTags('Posts'),
     ApiOperation({
-      summary: 'Return blog by id',
+      summary: 'Returns post by id',
     }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: BlogDTO,
+      type: PostDTO,
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: 'Not Found',
     }),
   );
 }

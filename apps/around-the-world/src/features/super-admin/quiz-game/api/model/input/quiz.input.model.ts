@@ -35,6 +35,10 @@ export class QuestionInputModel {
 }
 
 export class PublishedInputModel {
+  @ApiProperty({
+    description: 'body',
+    example: true,
+  })
   @IsBoolean()
   @IsNotEmpty()
   published: boolean;

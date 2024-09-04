@@ -1,23 +1,19 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  BlogsWithPaginationViewModelDTO,
+  CommentsWithPaginationViewModelDTO,
   PageNumberDTO,
   PageSizeDTO,
-  SearchNameTermDTO,
+  PostIdDTO,
   SortByDTO,
   SortDirectionDTO,
-} from '../../dtoTypes';
+} from '../dtoTypes';
 
-export function SwaggerGetAllBlogsEndpoint() {
+export function SwaggerGetCommentsByPostIdEndpoint() {
   return applyDecorators(
-    ApiTags('Blogs'),
+    ApiTags('Posts'),
     ApiOperation({
-      summary: 'Return all blogs with paging',
-    }),
-    ApiQuery({
-      name: 'searchNameTerm',
-      type: SearchNameTermDTO,
+      summary: 'Returns comments for specified post',
     }),
     ApiQuery({
       name: 'sortBy',
@@ -35,10 +31,18 @@ export function SwaggerGetAllBlogsEndpoint() {
       name: 'pageSize',
       type: PageSizeDTO,
     }),
+    ApiQuery({
+      name: 'postId',
+      type: PostIdDTO,
+    }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: BlogsWithPaginationViewModelDTO,
+      type: CommentsWithPaginationViewModelDTO,
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: `If post for passed postId doesn't exist`,
     }),
   );
 }

@@ -48,7 +48,6 @@ import { SwaggerPasswordRecoveryEndpoint } from '../../../../swagger/auth/passwo
 import { SwaggerNewPasswordEndpoint } from '../../../../swagger/auth/newPassword';
 import { SwaggerLoginEndpoint } from '../../../../swagger/auth/login';
 import { SwaggerRefreshTokenEndpoint } from '../../../../swagger/auth/refreshToken';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { SwaggerRegistrationEmailResendingEndpoint } from '../../../../swagger/auth/registrationEmailResending';
 import { SwaggerLogoutEndpoint } from '../../../../swagger/auth/logout';
 import { SwaggerMeEndpoint } from '../../../../swagger/auth/me';

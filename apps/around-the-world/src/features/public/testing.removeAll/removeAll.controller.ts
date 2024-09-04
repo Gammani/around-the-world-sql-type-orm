@@ -8,6 +8,7 @@ import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.t
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { QuizRepository } from '../../super-admin/quiz-game/infrastructure/quiz.repository';
+import { SwaggerRemoveAllDataEndpoint } from '../../../swagger/testing/testing';
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {
@@ -24,6 +25,7 @@ export class TestingRemoveAll {
   ) {}
 
   @HttpCode(204)
+  @SwaggerRemoveAllDataEndpoint()
   @Delete()
   async removeAllData() {
     await this.quizQuestionRepo.deleteAll();

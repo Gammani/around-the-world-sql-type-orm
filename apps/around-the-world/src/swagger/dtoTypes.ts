@@ -94,6 +94,12 @@ export class BlogIdDTO {
   })
   blogId: string;
 }
+export class PostIdDTO {
+  @ApiProperty({
+    required: true,
+  })
+  postId: string;
+}
 
 // user
 export class UserDTO {
@@ -187,7 +193,7 @@ export class QuizQuestionsViewModelDTO {
 }
 
 // post
-export class PostWithPaginationViewModelDTO {
+export class PostViewModelDTO {
   @ApiProperty({ example: 'string' })
   id: string;
   @ApiProperty({ example: 'string' })
@@ -204,6 +210,18 @@ export class PostWithPaginationViewModelDTO {
   createdAt: string;
   @ApiProperty({ example: ExtendedLikesInfoDTO })
   extendedLikesInfo: ExtendedLikesInfoDTO;
+}
+export class PostsWithPaginationViewModelDTO {
+  @ApiProperty({ example: 0 })
+  pageCount: number;
+  @ApiProperty({ example: 0 })
+  page: number;
+  @ApiProperty({ example: 0 })
+  pageSize: number;
+  @ApiProperty({ example: 0 })
+  totalCount: number;
+  @ApiProperty({ type: [PostViewModelDTO] })
+  items: PostViewModelDTO;
 }
 
 // view
@@ -237,4 +255,107 @@ export class PostDTO {
   createdAt: string;
   @ApiProperty({ example: ExtendedLikesInfoDTO })
   extendedLikesInfo: ExtendedLikesInfoDTO;
+}
+
+//comments
+export class CommentatorInfoDTO {
+  @ApiProperty({ example: 'string' })
+  userId: string;
+  @ApiProperty({ example: 'string' })
+  userLogin: string;
+}
+export class CommentLikeDTO {
+  @ApiProperty({ example: 0 })
+  likesCount: number;
+  @ApiProperty({ example: 0 })
+  dislikesCount: number;
+  @ApiProperty({ example: 'None' })
+  myStatus: string;
+}
+export class CommentDTO {
+  @ApiProperty({ example: 'string' })
+  id: string;
+  @ApiProperty({ example: 'string' })
+  content: string;
+  @ApiProperty({ type: CommentatorInfoDTO })
+  commentatorInfo: CommentatorInfoDTO;
+  @ApiProperty({ example: '2024-09-02T14:52:07.296Z' })
+  createdAt: string;
+  @ApiProperty({ type: CommentLikeDTO })
+  likesInfo: CommentLikeDTO;
+}
+export class CommentsWithPaginationViewModelDTO {
+  @ApiProperty({ example: 0 })
+  pageCount: number;
+  @ApiProperty({ example: 0 })
+  page: number;
+  @ApiProperty({ example: 0 })
+  pageSize: number;
+  @ApiProperty({ example: 0 })
+  totalCount: number;
+  @ApiProperty({ type: [CommentDTO] })
+  items: CommentDTO;
+}
+
+// quiz game
+export class Answer {
+  @ApiProperty({ example: 'string' })
+  questionId: string;
+  @ApiProperty({ example: 'Correct' })
+  answerStatus: string;
+  @ApiProperty({ example: '2024-09-02T11:55:33.576Z' })
+  addedAt: string;
+}
+export class QuizPlayer {
+  @ApiProperty({ example: 'string' })
+  id: string;
+  @ApiProperty({ example: 'string' })
+  login: string;
+}
+
+export class PlayerProgressInGame {
+  @ApiProperty({ type: [Answer] })
+  answers: Answer;
+  @ApiProperty({ type: QuizPlayer })
+  player: QuizPlayer;
+  @ApiProperty({ example: 0 })
+  score: number;
+}
+
+export class QuizGameViewModel {
+  @ApiProperty({ example: 'string' })
+  id: string;
+  @ApiProperty({ type: PlayerProgressInGame })
+  firstPlayerProgress: PlayerProgressInGame;
+  @ApiProperty({ type: PlayerProgressInGame })
+  secondPlayerProgress: PlayerProgressInGame;
+  @ApiProperty({ example: 'PendingSecondPlayer' })
+  status: string;
+  @ApiProperty({ example: '2024-09-02T13:01:42.937Z' })
+  pairCreatedDate: string;
+  @ApiProperty({ example: '2024-09-02T13:01:42.937Z' })
+  startGameDate: string;
+  @ApiProperty({ example: '2024-09-02T13:01:42.937Z' })
+  finishGameDate: string;
+}
+
+export class AnswerDTO {
+  @ApiProperty({ example: 'string' })
+  questionId: string;
+  @ApiProperty({ example: 'Correct' })
+  answerStatus: string;
+  @ApiProperty({ example: '2024-09-02T13:16:56.403Z' })
+  addedAt: string;
+}
+
+// deviceDTO
+export class DeviceDTO {
+  @ApiProperty({ example: 'string' })
+  ip: string;
+  @ApiProperty({ example: 'string' })
+  title: string;
+  @ApiProperty({ example: 'string' })
+  lastActiveDate: string;
+  @ApiProperty({ example: 'string' })
+  deviceId: string;
 }

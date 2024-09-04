@@ -6,13 +6,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-export function SwaggerRemoveUserByAdminEndpoint() {
+export function SwaggerDeleteQuestionEndpoint() {
   return applyDecorators(
-    ApiTags('admin/users'),
+    ApiTags('admin/QuizQuestions'),
     ApiOperation({
-      summary: 'Delete user specified by id',
+      summary: 'Delete question',
     }),
-
     ApiBasicAuth(),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
@@ -24,7 +23,7 @@ export function SwaggerRemoveUserByAdminEndpoint() {
     }),
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
-      description: 'If specified user is not exists',
+      description: 'Not Found',
     }),
   );
 }

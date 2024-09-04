@@ -10,7 +10,7 @@ import {
   BlogIdDTO,
   PageNumberDTO,
   PageSizeDTO,
-  PostWithPaginationViewModelDTO,
+  PostViewModelDTO,
   SortByDTO,
   SortDirectionDTO,
 } from '../../dtoTypes';
@@ -45,7 +45,7 @@ export function SwaggerGetPostsByBlogIdByAdminEndpoint() {
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Success',
-      type: PostWithPaginationViewModelDTO,
+      type: PostViewModelDTO,
     }),
     ApiResponse({
       status: HttpStatus.UNAUTHORIZED,
