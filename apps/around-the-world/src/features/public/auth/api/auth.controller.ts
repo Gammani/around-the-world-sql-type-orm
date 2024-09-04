@@ -52,7 +52,7 @@ import { SwaggerRegistrationEmailResendingEndpoint } from '../../../../swagger/a
 import { SwaggerLogoutEndpoint } from '../../../../swagger/auth/logout';
 import { SwaggerMeEndpoint } from '../../../../swagger/auth/me';
 
-// @UseGuards(ThrottlerGuard)
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
