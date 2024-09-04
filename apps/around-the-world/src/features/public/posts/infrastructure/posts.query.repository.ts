@@ -32,6 +32,7 @@ export class PostsQueryRepository {
     const sortedOptions = sortedParamOptions(
       pageNumberQuery,
       pageSizeQuery,
+
       [
         'id',
         'title',
@@ -90,7 +91,7 @@ export class PostsQueryRepository {
                 .limit(3);
             }, 'agg');
         }, 'newestLikes')
-        .leftJoinAndSelect('p.blogs', 'blog')
+        .leftJoinAndSelect('p.blog', 'blog')
         .where('p.blogId = :blogId', { blogId })
         .orderBy(
           `${sortedOptions.sortBy}` === 'blogName'
@@ -148,7 +149,7 @@ export class PostsQueryRepository {
                 .limit(3);
             }, 'agg');
         }, 'newestLikes')
-        .leftJoinAndSelect('p.blogs', 'blog')
+        .leftJoinAndSelect('p.blog', 'blog')
         .orderBy(
           `${sortedOptions.sortBy}` === 'blogName'
             ? `blog.name`

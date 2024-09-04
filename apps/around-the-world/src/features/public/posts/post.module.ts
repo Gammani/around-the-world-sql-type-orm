@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { PostsService } from './application/posts.service';
 import { PostsRepository } from './infrastructure/posts.repository';
+
 import { PostsController } from './api/posts.controller';
 import { CommentsQueryRepository } from '../comments/infrastructure/comments.query.repository';
 import { PostsQueryRepository } from './infrastructure/posts.query.repository';
