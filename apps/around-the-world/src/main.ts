@@ -3,9 +3,8 @@ import { AppModule } from './app.module';
 import { applyAppSettings } from './settings/apply-app-setting';
 import { SwaggerModule } from '@nestjs/swagger';
 import { configurationSwagger } from './swagger/config';
-import { createWriteStream, mkdirSync } from 'fs';
+import { createWriteStream } from 'fs';
 import { get } from 'http';
-import { join } from 'path';
 
 const PORT = process.env.PORT || 5000;
 const serverUrl = 'http://localhost:5000';
