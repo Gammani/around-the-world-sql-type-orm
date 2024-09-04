@@ -21,9 +21,15 @@ import { BlogSuperAdminModule } from './features/super-admin/blogs/blogSuperAdmi
 import { BlogPublicModule } from './features/public/blogs/blogPublicModule';
 import { options } from './settings/configuration/options';
 import { QuizGameModule } from './features/super-admin/quiz-game/quizGame.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
+    }),
     TypeOrmModule.forRoot(options),
     CqrsModule,
     configModule,

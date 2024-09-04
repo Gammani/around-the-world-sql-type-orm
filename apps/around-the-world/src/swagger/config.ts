@@ -1,9 +1,8 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 
 export function configurationSwagger() {
-  console.log('a');
   const config = new DocumentBuilder()
-    .setTitle('API Example')
+    .setTitle('API Around The World')
     .setDescription('The API description')
     .setVersion('1.0')
     .addTag('example')
