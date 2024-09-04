@@ -53,7 +53,7 @@ import { SwaggerLogoutEndpoint } from '../../../../swagger/auth/logout';
 import { SwaggerMeEndpoint } from '../../../../swagger/auth/me';
 
 @UseGuards(ThrottlerGuard)
-@Controller('auth')
+//@Controller('auth')
 export class AuthController {
   constructor(
     private commandBus: CommandBus,
