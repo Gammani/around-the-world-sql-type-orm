@@ -26,3 +26,8 @@
 
 <br> Ссылка на проект https://around-the-world-sql-type-orm.vercel.app/
 <br> SWAGGER https://around-the-world-sql-type-orm.vercel.app/swagger#/
+
+<br> Проект представляет собой блог в котором пользователи могут создавать посты, комментарии а так же ставить лайки к постам и комментариям.
+Реализована возможность регистрации новых пользователей c подтверждением через почту. 
+<br> QuizGame (в процессе)
+<br> В проекте использовалось: Nest, postgreSQL, typeorm, typeScript, cqrs, passport strategy, jwt, bcrypt, кастомные декораторы.
